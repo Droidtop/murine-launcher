@@ -1,26 +1,46 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-buildscript {
-    dependencies {
-        classpath GRADLE_CLASS_PATH
-        classpath PROTOBUF_CLASS_PATH
-        classpath KOTLIN
-    }
-}
-
+// shell-default: forked-in Murine Launcher (github.com/alesimula/Murine-launcher,
+// itself a de-privileged fork of AOSP Launcher3), stripped down to a single
+// variant for droidtop:
+//
+//  - Converted from com.android.application to com.android.library —
+//    :app is the one module that produces our final APK; every other
+//    module (including this one) contributes to it as a library.
+//  - Flavor dimensions removed entirely. Upstream had "app" (aosp/l3go) x
+//    "recents" (withQuickstep/withoutQuickstep) flavor dimensions; we only
+//    ever want the aosp+withoutQuickstep combination — l3go is the cut-down
+//    "Android Go" variant (irrelevant here), and quickstep/recents needs
+//    sysui_shared.jar (a real AOSP system-signature artifact we don't have
+//    and can't get as a normal app) to compile at all. Kept as a single
+//    hardcoded source set instead of a flavor matrix we'd never switch.
+//  - Package/namespace kept as com.android.launcher3 (not renamespaced to
+//    dev.droidtop.*) — every source file's `package` declaration and every
+//    cross-file reference uses this name throughout the fork; renaming it
+//    would touch thousands of lines for no functional benefit and would
+//    make pulling future upstream fixes much harder to diff against.
+//
+// See README.md for what's real vs. still-TODO (multi-display patch,
+// build verification status).
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    id("org.jetbrains.kotlin.kapt")
     alias(libs.plugins.rikka.refine)
-    id "com.google.devtools.ksp" version "2.3.3"
+    alias(libs.plugins.google.ksp)
+    alias(libs.plugins.google.protobuf)
 }
 
-final String ANDROID_TOP = "${rootDir}"
-// Old 'prebuilts', nor used anymore, stashed to: https://github.com/alesimula/old-resources-m-launcher
-final String FRAMEWORK_PREBUILTS_DIR = "${ANDROID_TOP}/prebuilts/libs/"
+// Old prebuilt framework/SystemUI jars this fork needs at compile time
+// (SystemUI-core, plugin core, animation lib, msdl, aconfig flags, ...) —
+// not committed to this repo (~200MB+ of binary jars; see .gitignore and
+// build-scripts/fetch-shell-default-prebuilts.sh), fetched from
+// github.com/alesimula/old-resources-m-launcher before building.
+final String FRAMEWORK_PREBUILTS_DIR = "${projectDir}/prebuilts/libs/"
 
 // ------------------ Framework stub dependency pipeline ------------------
-// Framework stubs retrieved from Jitpack in order to prepend them to the classpath
-
+// Per-Android-version hidden/internal API stub jars, published on Jitpack —
+// this is the actual mechanism that lets this fork call hidden framework
+// APIs without a full AOSP source tree (see compatLib's per-version
+// modules, which target these).
 ext.resolveJitpackStub = { String version ->
     def config = project.configurations.detachedConfiguration(
             project.dependencies.create("com.github.alesimula:android-framework-stubs:${version}")
@@ -29,7 +49,6 @@ ext.resolveJitpackStub = { String version ->
     return project.files(config.resolve())
 }
 
-// Register framework stubs for all supported versions
 def frameworkStubs10 = resolveJitpackStub('10-r1')
 def frameworkStubs11 = resolveJitpackStub('11-r1')
 def frameworkStubs12 = resolveJitpackStub('12-r1')
@@ -38,260 +57,145 @@ def frameworkStubs14 = resolveJitpackStub('14-r1')
 def frameworkStubs15 = resolveJitpackStub('15-r1')
 def frameworkStubs16 = resolveJitpackStub('16-r2')
 
-apply plugin: 'com.google.protobuf'
-apply plugin: 'org.jetbrains.kotlin.android'
-apply plugin: 'kotlin-kapt'
-
 android {
-    compileSdkVersion COMPILE_SDK
-
-    namespace = 'com.android.launcher3'
+    namespace 'com.android.launcher3'
+    // Matches every sub-module this depends on (androidx-lib, compatLib*,
+    // SettingsLib-*, systemUIPluginCore, ...) — they all hardcode
+    // compileSdk 36, so this module has to as well even though the rest
+    // of droidtop's own modules (:app, :host-bridge, ...) are still on 34.
+    // AGP allows a mixed compileSdk across modules in one build; it's the
+    // per-module SDK platform availability that matters, not uniformity.
+    compileSdk 36
 
     defaultConfig {
-        minSdkVersion 26
-        targetSdkVersion 36
-        versionCode 10102
-        versionName "1.1.2"
-
-        buildConfigField "boolean", "IS_STUDIO_BUILD", "false"
-        buildConfigField "boolean", "QSB_ON_FIRST_SCREEN", "false"
-        buildConfigField "boolean", "IS_DEBUG_DEVICE", "false"
-        buildConfigField "boolean", "WIDGET_ON_FIRST_SCREEN", "true"
-        buildConfigField "boolean", "WIDGETS_ENABLED", "true"
-        buildConfigField "boolean", "NOTIFICATION_DOTS_ENABLED", "true"
-        buildConfigField "boolean", "ANIMATE_ALL_APPS_SEARCH", "false"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        minSdk 26
+        targetSdk 36
         vectorDrawables.useSupportLibrary = true
-    }
-
-    def proguardFilesFromAosp = allprojects
-            .collect { it.file("proguard.flags") }
-            .findAll { it.exists() }
-            .toArray()
-
-    buildTypes {
-        debug {
-            applicationIdSuffix ".debug"
-            debuggable true
-            minifyEnabled false
-        }
-
-        release {
-            debuggable false
-            minifyEnabled true
-            shrinkResources true
-            pseudoLocalesEnabled false
-            proguardFiles proguardFilesFromAosp + "proguard.pro"
-        }
-    }
-
-    dependenciesInfo {
-        // Disables dependency metadata when building APKs (for IzzyOnDroid/F-Droid)
-        includeInApk = false
-        // Disables dependency metadata when building Android App Bundles (for Google Play)
-        includeInBundle = false
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_21
-        targetCompatibility JavaVersion.VERSION_21
-    }
-
-    // The flavor dimensions for build variants (e.g. aospWithQuickstep, aospWithoutQuickstep)
-    // See: https://developer.android.com/studio/build/build-variants#flavor-dimensions
-    flavorDimensions "app", "recents"
-
-    productFlavors {
-        aosp {
-            dimension "app"
-            applicationId 'app.murinelauncher'
-            testApplicationId 'com.android.launcher3.tests'
-        }
-
-        l3go {
-            dimension "app"
-            applicationId 'app.murinelauncher'
-            testApplicationId 'com.android.launcher3.tests'
-        }
-
-        withQuickstep {
-            dimension "recents"
-
-            minSdkVersion 33
-        }
-
-        withoutQuickstep {
-            dimension "recents"
-        }
-    }
-
-    sourceSets {
-        main {
-            res.srcDirs = ['res']
-            java.srcDirs = ['src', 'src_plugins' /*, 'tests/shared', 'system_ext', 'tests/multivalentTests/shared', 'systemui_core/shared'*/]
-            manifest.srcFile 'AndroidManifest-common.xml'
-            proto {
-                srcDirs = ['protos/', 'quickstep/protos_overrides/']
-            }
-        }
-
-        //androidTest {
-        //    res.srcDirs = ['tests/res']
-        //    java.srcDirs = ['tests/src', 'tests/tapl']
-        //    manifest.srcFile "tests/AndroidManifest-common.xml"
-        //}
-//
-        //androidTestDebug {
-        //    manifest.srcFile "tests/AndroidManifest.xml"
-        //}
-
-        aosp {
-            java.srcDirs = [/*'src_flags',*/ 'src_shortcuts_overrides']
-        }
-
-        aospWithoutQuickstep {
-            java.srcDirs = ['src_no_quickstep']
-            manifest.srcFile "AndroidManifest.xml"
-        }
-
-        aospWithQuickstep {
-            manifest.srcFile "quickstep/AndroidManifest-launcher.xml"
-        }
-
-        l3go {
-            res.srcDirs = ['go/res']
-            java.srcDirs = ['go/src']
-            manifest.srcFile "go/AndroidManifest.xml"
-        }
-
-        l3goWithoutQuickstepDebug {
-            manifest.srcFile "AndroidManifest.xml"
-        }
-
-        l3goWithQuickstepDebug {
-            manifest.srcFile "quickstep/AndroidManifest-launcher.xml"
-        }
-
-        withoutQuickstep {
-            //java.srcDirs = ['src_ui_overrides']
-        }
-
-        withQuickstep {
-            res.srcDirs = ['quickstep/res', 'quickstep/recents_ui_overrides/res']
-            java.srcDirs = ['quickstep/src', 'quickstep/recents_ui_overrides/src', 'quickstep/src_protolog', 'quickstep/dagger']
-            manifest.srcFile "quickstep/AndroidManifest.xml"
-        }
-    }
-    kotlinOptions {
-        jvmTarget = '21'
+        // Library modules don't auto-generate BuildConfig.APPLICATION_ID
+        // the way an application module does (that's an app-only concept —
+        // AGP only auto-populates LIBRARY_PACKAGE_NAME for libraries).
+        // ApiWrapper.java/PrivateProfileManager.java reference
+        // BuildConfig.APPLICATION_ID directly; hardcoded here rather than
+        // threading a Context through those call sites, since shell-default
+        // is only ever consumed by :app (applicationId "dev.droidtop.app" —
+        // see app/build.gradle.kts) in this repo.
+        buildConfigField "String", "APPLICATION_ID", "\"dev.droidtop.app\""
     }
 
     buildFeatures {
         buildConfig = true
     }
 
+    buildTypes {
+        debug {
+            buildConfigField "boolean", "IS_STUDIO_BUILD", "false"
+            buildConfigField "boolean", "QSB_ON_FIRST_SCREEN", "false"
+            buildConfigField "boolean", "IS_DEBUG_DEVICE", "false"
+            buildConfigField "boolean", "WIDGET_ON_FIRST_SCREEN", "true"
+            buildConfigField "boolean", "WIDGETS_ENABLED", "true"
+            buildConfigField "boolean", "NOTIFICATION_DOTS_ENABLED", "true"
+            buildConfigField "boolean", "ANIMATE_ALL_APPS_SEARCH", "false"
+        }
+    }
+
+    sourceSets {
+        main {
+            // AndroidManifest.xml at the conventional src/main path is a
+            // hand-merge of upstream's AndroidManifest-common.xml +
+            // AndroidManifest.xml (aospWithoutQuickstep flavor) — see that
+            // file's own header comment for why.
+            res.srcDirs = ['res']
+            java.srcDirs = ['src', 'src_plugins', 'src_no_quickstep', 'src_shortcuts_overrides']
+            proto {
+                srcDirs = ['protos/', 'protos_overrides/']
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
 }
 
-// 启用增量注解处理（提升编译速度）
 kapt {
     useBuildCache = true
     correctErrorTypes = true
-    javacOptions {
-//        option("-Xmaxerrs", 1000)
-    }
 }
 
-allprojects {
-    ext {
-        daggerVersion = '2.56.2'
-        /*addFrameworkJarInternal = { Project proj, String name ->
-            def frameworkJar = new File(FRAMEWORK_PREBUILTS_DIR, name)
-            if (!frameworkJar.exists()) {
-                throw new IllegalArgumentException("Framework jar path ${frameworkJar.path} doesn't exist")
-            }
-            proj.dependencies {
-                compileOnly proj.files(frameworkJar)
-            }
-            proj.gradle.projectsEvaluated {
-                proj.tasks.withType(JavaCompile).configureEach {
-                    classpath = proj.files(frameworkJar, classpath)
-                }
-                proj.tasks.withType(KotlinCompile).configureEach {
-                    libraries.setFrom proj.files(frameworkJar, libraries)
-                }
-            }
-        }*/
-
-        // Prepend a framework stub jar to the compile classpath.
-        // excludePrefix filters JavaCompile tasks to avoid circular deps.
-        addFrameworkStubsInternal = { Project proj, String excludePrefix, def stubsConfig ->
-            proj.dependencies {
-                compileOnly proj.files(stubsConfig)
-            }
-            proj.gradle.projectsEvaluated {
-                proj.tasks.withType(JavaCompile).configureEach { task ->
-                    if (!task.name.startsWith(excludePrefix)) {
-                        classpath = proj.files(stubsConfig, classpath)
-                    }
-                }
-                proj.tasks.withType(KotlinCompile).configureEach {
-                    libraries.setFrom proj.files(stubsConfig, libraries)
+// Prepend a framework stub jar to the compile classpath — a plain
+// compileOnly dependency does NOT win against the SDK's own (redacted)
+// android.jar for android.* symbols (that comes from AGP's bootclasspath,
+// a separate, higher-priority classpath segment); this actually reorders
+// each compile task's own classpath/libraries instead. Safe to call for
+// `project` (this module, self) at any point — it defers via
+// gradle.projectsEvaluated internally rather than calling afterEvaluate on
+// an already-evaluated project, which is the trap the removed cross-project
+// version of this hit (see the comment further down).
+ext.addFrameworkStubsInternal = { Project proj, String excludePrefix, def stubsConfig ->
+    proj.dependencies {
+        compileOnly proj.files(stubsConfig)
+    }
+    proj.gradle.projectsEvaluated {
+        proj.tasks.withType(JavaCompile).configureEach { task ->
+            if (!task.name.startsWith(excludePrefix)) {
+                // doFirst, not a direct assignment here: task.classpath is
+                // still null at configureEach time (before AGP finishes
+                // wiring it), which throws deep inside Groovy's `files(a,
+                // null)` coercion — confirmed by a real build failure
+                // (":Animation:compileDebugJavaWithJavac", "Could not find
+                // matching constructor for: FileCollection(File, null)").
+                // doFirst defers until task execution, when classpath is
+                // guaranteed fully resolved.
+                task.doFirst {
+                    task.classpath = proj.files(stubsConfig, task.classpath)
                 }
             }
         }
-
-        afterEvaluate { proj ->
-            if (proj.plugins.hasPlugin('com.android.application') || proj.plugins.hasPlugin('com.android.library')) {
-
-                // Map compat lib suffix -> stubs info
-                def stubsMap = [
-                        ""      : frameworkStubs15,
-                        Baklava : frameworkStubs16,
-                        Q       : frameworkStubs10,
-                        R       : frameworkStubs11,
-                        S       : frameworkStubs12,
-                        T       : frameworkStubs13,
-                        U       : frameworkStubs14,
-                        V       : frameworkStubs15,
-                ]
-                def m = proj.name =~ /^compatLibV?(.*)$/
-                def stubs = frameworkStubs16  // default for non-compat modules
-                if (m.matches()) stubs = stubsMap.get(m[0][1], frameworkStubs16)
-                addFrameworkStubsInternal(proj, "compileFrameworkStubs", stubs)
-
-
-                proj.dependencies {
-                    // Apply all shared prebuilt jars to every module
-                    // Use compileOnly to avoid desugaring/R8 errors with framework stubs
-                    compileOnly proj.fileTree(dir: FRAMEWORK_PREBUILTS_DIR, include: ['*.jar'], exclude: ['framework-*.jar'])
-
-                    // Common androidx/libs available everywhere
-                    implementation libs.androidx.core.ktx
-                    implementation libs.annotation
-                    implementation libs.kotlinx.coroutines
-                }
-            }
-        }
-
-        compileOnlyCommonJars = {
-            dependencies {
-                compileOnly fileTree(dir: FRAMEWORK_PREBUILTS_DIR, include: 'SystemUI-core-16.jar')
-                compileOnly fileTree(dir: FRAMEWORK_PREBUILTS_DIR, include: 'SystemUI-statsd-16.jar')
-
-                // Always declare as dependencies regardless
-                compileOnly project(':compatLib')
-                compileOnly project(':compatLib:compatLibVQ')
-                compileOnly project(':compatLib:compatLibVR')
-                compileOnly project(':compatLib:compatLibVS')
-                compileOnly project(':compatLib:compatLibVT')
-                compileOnly project(':compatLib:compatLibVU')
-                compileOnly project(':compatLib:compatLibVV')
-                compileOnly project(':compatLib:compatLibVBaklava')
+        proj.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach { task ->
+            task.doFirst {
+                task.libraries.setFrom proj.files(stubsConfig, task.libraries)
             }
         }
     }
 }
+
+// NOTE on two bugs in upstream Murine's own build.gradle this fork found
+// and worked around (not just corrected — the whole cross-project
+// injection *mechanism* had to go, see below):
+//
+// 1. The equivalent block there was `allprojects { ext { afterEvaluate {
+//    proj -> ... } } }` — nesting `afterEvaluate { ... }` *inside* an
+//    `ext {}` block doesn't register a real Project.afterEvaluate()
+//    lifecycle hook; in Groovy that just defines a dead extra-property
+//    literally named "afterEvaluate" holding an unused closure. The
+//    framework-stub and androidx.annotation/core-ktx/coroutines injection
+//    below silently never ran for any submodule as a result — confirmed
+//    while building this fork (compatLib failed with "cannot find symbol:
+//    RemoteAnimationTarget" / "cannot find symbol: androidx.annotation.
+//    NonNull", both of which this injection is supposed to provide).
+//
+// 2. `allprojects { ... }` in Gradle means every project in the *entire*
+//    build, not "this module and its children" — harmless in upstream
+//    Murine where it WAS the whole build, but inside droidtop's monorepo
+//    it would reach :app, :host-bridge, every other unrelated module too.
+//
+// Fixing just those two (calling a properly-scoped real afterEvaluate)
+// still failed differently: "Cannot run Project.afterEvaluate(Closure)
+// when the project is already evaluated" — Gradle evaluates a project's
+// *dependencies* before the project itself when they're referenced via
+// `implementation project(':X')` (which shell-default's own dependencies
+// block below does, for every one of these sub-modules), so by the time
+// this script tries to hook their afterEvaluate, they're already done.
+// There's no reliable ordering-independent way to inject dependencies
+// into sibling projects reactively like this; each module now declares
+// its own framework-stub/androidx.annotation/core-ktx/coroutines
+// dependencies directly in its own build.gradle instead (see e.g.
+// systemUIPluginCore/build.gradle, compatLib/*/build.gradle) — more
+// lines, but doesn't depend on cross-project evaluation order at all.
 
 dependencies {
     implementation libs.androidx.appcompat
@@ -314,8 +218,7 @@ dependencies {
     implementation libs.rikka.refine.runtime
     implementation libs.intuit.sdp
 
-    // Use the crash recovery library even for release (it's negligibly light)
-    implementation 'com.github.alesimula.Recovery:recovery:1.0.7' // injected in LauncherApplication.java
+    implementation 'com.github.alesimula.Recovery:recovery:1.0.7'
     implementation 'com.github.alesimula:murine-aircompressor:2.0.9'
 
     api libs.lottie
@@ -330,9 +233,7 @@ dependencies {
     androidTestImplementation libs.rules
     androidTestImplementation libs.uiautomator.v18
     androidTestImplementation libs.annotation
-}
 
-dependencies {
     implementation project(':IconLoader')
     implementation project(':Animation')
     implementation project(':Shared')
@@ -345,65 +246,38 @@ dependencies {
     implementation project(':SettingsLib-ExpandablePreference')
     implementation project(':SettingsLib-SegmentedButtonPreference')
     implementation project(':SettingsLib-MainSwitchPreference')
-    withQuickstepCompileOnly project(':HiddenApi')
-
-    // Include all compat libs
-    implementation project(':compatLib')
-    implementation project(':compatLib:compatLibVQ')
-    implementation project(':compatLib:compatLibVR')
-    implementation project(':compatLib:compatLibVS')
-    implementation project(':compatLib:compatLibVT')
-    implementation project(':compatLib:compatLibVU')
-    implementation project(':compatLib:compatLibVV')
-    implementation project(':compatLib:compatLibVBaklava')
 
     implementation project(':systemUIPluginCore')
+
+    // compatLib (+ its 7 per-Android-version variants) is NOT included —
+    // it's genuinely quickstep/recents-animation-only (unlike
+    // systemUIPluginCore, which is core plugin infrastructure needed
+    // regardless of quickstep — see above) and can't compile standalone
+    // regardless: compatLib/src/main/java/android/window/
+    // {RemoteTransition,TransitionInfo}.java are local reimplementations
+    // of AOSP's own internal Transitions-framework classes, declared
+    // directly inside the android.window package and using
+    // android.annotation.NonNull/Nullable — package-private annotations
+    // only resolvable from within a real platform source tree compile,
+    // not via any compileOnly stub jar. This is exactly the quickstep/
+    // recents-animation system-signature-permission wall dropping the
+    // quickstep flavor was already meant to avoid (see this file's own
+    // header comment) — confirmed by a real compile attempt, not assumed.
+    // The source is still physically present in this repo (compatLib/)
+    // for reference if a privileged/system-signed build ever revisits
+    // quickstep support; it just isn't included in settings.gradle.kts.
 }
 
-dependencies {
-    // Recents lib dependency
-    withQuickstepImplementation fileTree(dir: "${FRAMEWORK_PREBUILTS_DIR}", include: 'sysui_shared.jar')
-    // Required for AOSP to compile. This is already included in the sysui_shared.jar
-    //withoutQuickstepImplementation fileTree(dir: "${FRAMEWORK_PREBUILTS_DIR}", include: 'plugin_core.jar')
+// This module's own compile against Launcher.java etc. needs the same
+// hidden-API stub prepending every sub-module gets — see this file's
+// header comment.
+addFrameworkStubsInternal(project, "compileFrameworkStubs", frameworkStubs16)
 
-    l3goImplementation files('prebuilts/libs/libandroid_browser_helper.jar')
-//    withQuickstepImplementation files('prebuilts/libs/SettingsLibCollapsingToolbarBaseActivity.jar')
-    withQuickstepImplementation files('prebuilts/libs/SystemUISharedLib.jar')
-    withQuickstepImplementation files('prebuilts/libs/SystemUISharedLib_kotlin.jar')
-    withQuickstepImplementation files('prebuilts/libs/SystemUI-shared-utils_kotlin.jar')
-    withQuickstepImplementation files('prebuilts/libs/SystemUIUnfoldLib.jar')
-    withQuickstepImplementation files('prebuilts/libs/SystemUIUnfoldLib_kotlin.jar')
-    //implementation files('prebuilts/libs/SystemUI-statsd.jar') // Removed direct usage
-    withQuickstepImplementation files('prebuilts/libs/contextualeducationlib.jar')
-    withQuickstepImplementation files('prebuilts/libs/WindowManager-Shell-shared.jar')
-    withQuickstepImplementation files('prebuilts/libs/WindowManager-Shell-shared_kotlin.jar')
-
-    // Commented unnecessary dependancies, or replaced with withQuickstepImplementation
-    withQuickstepImplementation files('prebuilts/libs/am_flags_lib.jar') // only used in quickstep
-    withQuickstepImplementation files('prebuilts/libs/PlatformAnimationLib.jar') // only used in quickstep
-    withQuickstepImplementation files('prebuilts/libs/PlatformAnimationLib_kotlin.jar') // possibly used, but only in quickstep
-    //implementation files('prebuilts/libs/PluginAnnotationLib.jar') // part of [systemUIPluginCore]
-    //implementation files('prebuilts/libs/PluginAnnotationLib_kotlin.jar') // Not used
-    //implementation files('prebuilts/libs/PluginCoreLib.jar') // added decompiled stubs as dep [systemUIPluginCore]
-    //implementation files('prebuilts/libs/PluginCoreLib_kotlin.jar') // Not used
-    //implementation files('prebuilts/libs/view_capture_proto.jar') // Not used
-    //implementation files('prebuilts/libs/tracinglib-platform.jar')  // Not used
-    //implementation files('prebuilts/libs/view_capture.jar') // Not used
-    //implementation files('prebuilts/libs/view_capture_kotlin.jar') // Not used
-    //releaseImplementation files('prebuilts/libs/aconfig-annotations-lib.jar')
-}
-
-def protocVersion = '4.33.1'//'3.8.0'
+def protocVersion = '4.33.1'
 
 protobuf {
-    // Configure the protoc executable
     protoc {
-        if (osdetector.os == "osx") {
-            artifact = "com.google.protobuf:protoc:${protocVersion}:osx-x86_64"
-        } else {
-            //        artifact = "com.google.protobuf:protoc:${protocVersion}${PROTO_ARCH_SUFFIX}"
-            artifact = "com.google.protobuf:protoc:${protocVersion}"
-        }
+        artifact = "com.google.protobuf:protoc:${protocVersion}"
     }
     generateProtoTasks {
         all().each { task ->

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion COMPILE_SDK
+    compileSdk 36
     namespace "com.android.systemui.plugin_core"
 
     defaultConfig {
@@ -23,4 +23,18 @@ android {
             manifest.srcFile 'AndroidManifest.xml'
         }
     }
+}
+
+// Added by droidtop's fork (not upstream Murine) — see shell-default/
+// build.gradle's own header comment for why this can't be injected
+// centrally from there.
+def _frameworkStubs = project.configurations.detachedConfiguration(
+        project.dependencies.create("com.github.alesimula:android-framework-stubs:16-r2")
+)
+_frameworkStubs.transitive = false
+dependencies {
+    compileOnly project.files(_frameworkStubs.resolve())
+    implementation libs.androidx.core.ktx
+    implementation libs.annotation
+    implementation libs.kotlinx.coroutines
 }
