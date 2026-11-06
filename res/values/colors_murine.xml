@@ -27,6 +27,5 @@
     <!-- droidtop: the colours of droidtop's own dialogs in Standard (DroidtopDialog), in one place (Droidtop/tracker#771). -->
     <color name="droidtop_dialog_background">#FF1A1A1A</color>
     <color name="droidtop_dialog_text">#FFEDEDED</color>
-    <color name="droidtop_dialog_text_secondary">#FFD0D0D0</color>
     <color name="droidtop_dialog_accent">#FF8AB4FF</color>
 </resources>

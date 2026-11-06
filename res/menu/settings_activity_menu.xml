@@ -8,7 +8,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_global_settings"
-        android:title="@string/pref_global_settings_title"
+        android:title="@string/settings_button_text"
         android:icon="@drawable/ic_settings_general"
         android:showAsAction="always" />
 </menu>
