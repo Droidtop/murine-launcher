@@ -40,10 +40,10 @@ public class LauncherApplication extends Application {
         // Murine's own defaults for its hooks (app.murinelauncher.hooks) post with the application context; a host
         // installs its own hooks after this.
         app.murinelauncher.hooks.MurineHooks.attach(this);
-        // droidtop patch: a contained plugin's isolated process (droidtop's
+        // An isolated process (droidtop: a contained plugin's, its
         // docs/plugin-api.md 5.3) has no files, no preferences and no
         // permissions, and runs nothing of the launcher's.
-        if (dev.droidtop.runtime.util.IsolatedProcess.isIsolated()) return;
+        if (app.murinelauncher.util.IsolatedProcess.isIsolated()) return;
         // Only checks if a backup is staged, does nothing otherwise
         app.murinelauncher.backup.BackupHelper.INSTANCE.applyStagedRestoreIfNeeded(this);
         mNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
@@ -60,11 +60,11 @@ public class LauncherApplication extends Application {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // droidtop patch: as in onCreate, a contained plugin's isolated process
-        // has no preferences; reading the theme preference there threw on a
-        // dark-mode switch and took the plugin's sandbox down (console,
-        // 0.2.0-dev.2129, 2026-10-17 23:52).
-        if (dev.droidtop.runtime.util.IsolatedProcess.isIsolated()) return;
+        // As in onCreate, an isolated process has no preferences; reading the
+        // theme preference there threw on a dark-mode switch and took
+        // droidtop's plugin sandbox down (console, 0.2.0-dev.2129,
+        // 2026-10-17 23:52).
+        if (app.murinelauncher.util.IsolatedProcess.isIsolated()) return;
         int nightMode = newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK;
         if (nightMode != mNightMode) {
             mNightMode = nightMode;

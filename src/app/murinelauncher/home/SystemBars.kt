@@ -1,4 +1,4 @@
-package dev.droidtop.shell.standard
+package app.murinelauncher.home
 
 import android.app.Activity
 import android.view.View
@@ -9,12 +9,11 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.android.launcher3.LauncherPrefs
 
 /**
- * Settings > Home's "Hide status bar" and "Hide navigation bar" on Standard's home (Droidtop/tracker#703): on a
- * handheld's short panel the two bars take about a fifth of the home screen. Off by default, as Standard keeps the
- * system bars (docs/SPEC.md 2b). Hidden bars come back for a moment with a swipe from the edge. Only the home's own
+ * Settings > Home's "Hide status bar" and "Hide navigation bar" on the home (Droidtop/tracker#703): on a handheld's
+ * short panel the two bars take about a fifth of the home screen. Off by default. Hidden bars come back for a moment with a swipe from the edge. Only the home's own
  * window is changed, so an app opened from it keeps its own bars, and each display's home applies it on resume.
  */
-object StandardSystemBars {
+object SystemBars {
     @JvmStatic
     fun apply(activity: Activity) {
         val window = activity.window ?: return

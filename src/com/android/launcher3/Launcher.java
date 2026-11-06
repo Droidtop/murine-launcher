@@ -1195,16 +1195,11 @@ public class Launcher extends StatefulActivity<LauncherState>
     protected void onDeferredResumed() {
         logStopAndResume(true /* isResume */);
 
-        // droidtop patch: droidtop's own icon, asked for at the end of
-        // setup, is queued here, where the queue can place it.
-        dev.droidtop.shell.standard.HomeRolePrefs.placePendingIcon(this);
-        // droidtop patch: the home screen's in-place hint, long-press Home for the
-        // mode switcher, until it is done (Droidtop/tracker#829).
-        dev.droidtop.shell.standard.HomeHints.onHomeShown(this);
-        // droidtop patch: the pad's hint row above the dock, while a pad is in use (Droidtop/tracker#699).
-        dev.droidtop.shell.standard.StandardPadHints.onHomeShown(this);
-        // droidtop patch: Settings > Home's hidden system bars (Droidtop/tracker#703).
-        dev.droidtop.shell.standard.StandardSystemBars.apply(this);
+        // The host's work when the home shows (droidtop: its icon queued at the end of setup, placed here where the
+        // queue can place it; its in-place hints, Droidtop/tracker#829; the pad's hint row, Droidtop/tracker#699).
+        app.murinelauncher.hooks.MurineHooks.getHome().onHomeShown(this);
+        // Settings > Home's hidden system bars (Droidtop/tracker#703).
+        app.murinelauncher.home.SystemBars.apply(this);
         // Process any items that were added while Launcher was away.
         ItemInstallQueue.INSTANCE.get(this)
                 .resumeModelPush(FLAG_ACTIVITY_PAUSED);
@@ -2207,8 +2202,8 @@ public class Launcher extends StatefulActivity<LauncherState>
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         TestLogging.recordKeyEvent(TestProtocol.SEQUENCE_MAIN, "Key event", event);
-        // droidtop patch: a pad press shows the pad's hint row (Droidtop/tracker#699).
-        dev.droidtop.shell.standard.StandardPadHints.noteKey(event);
+        // The host sees each key (droidtop: a pad press shows the pad's hint row, Droidtop/tracker#699).
+        app.murinelauncher.hooks.MurineHooks.getHome().onKey(event);
         return (event.getKeyCode() == KeyEvent.KEYCODE_HOME) || super.dispatchKeyEvent(event);
     }
 
@@ -2226,8 +2221,8 @@ public class Launcher extends StatefulActivity<LauncherState>
                 break;
         }
         TestLogging.recordMotionEvent(TestProtocol.SEQUENCE_MAIN, "Touch event", ev);
-        // droidtop patch: a finger hides the pad's hint row (Droidtop/tracker#699).
-        dev.droidtop.shell.standard.StandardPadHints.noteTouch(ev);
+        // The host sees each touch (droidtop: a finger hides the pad's hint row, Droidtop/tracker#699).
+        app.murinelauncher.hooks.MurineHooks.getHome().onTouch(ev);
         return super.dispatchTouchEvent(ev);
     }
 
@@ -2236,17 +2231,15 @@ public class Launcher extends StatefulActivity<LauncherState>
         getBackCallback().onBackInvoked();
     }
 
-    // droidtop patch (not upstream Murine/Launcher3): there's no dedicated
-    // "menu" button on modern Android, so a long-press of the back key
-    // opens droidtop's shell switcher (Android/Desktop/Gaming/Settings)
-    // instead. A plain back press above still does its normal job
-    // (closing all-apps/a folder/etc.) regardless of state — this is a
-    // second, independent trigger, not a replacement for it. See
-    // dev.droidtop.shell.standard.BackButtonMenu.
+    // There's no dedicated "menu" button on modern Android, so a long press
+    // of Back is the host's (droidtop: its mode menu, BackButtonMenu). A
+    // plain Back press above still does its normal job (closing all-apps, a
+    // folder and so on) regardless of state: this is a second, independent
+    // trigger, not a replacement for it.
     @Override
     public boolean onKeyLongPress(int keyCode, android.view.KeyEvent event) {
-        if (keyCode == android.view.KeyEvent.KEYCODE_BACK) {
-            dev.droidtop.shell.standard.BackButtonMenu.show(this);
+        if (keyCode == android.view.KeyEvent.KEYCODE_BACK
+                && app.murinelauncher.hooks.MurineHooks.getHome().onBackLongPress(this)) {
             return true;
         }
         return super.onKeyLongPress(keyCode, event);

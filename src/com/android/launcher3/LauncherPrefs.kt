@@ -392,7 +392,7 @@ constructor(@ApplicationContext private val encryptedContext: Context) {
         // service, which owns its window, is enabled.
         @JvmField
         val TASKBAR_ENABLED = backedUpItem("pref_taskbar", true)
-        // droidtop: the home's system bars, hidden on request (Droidtop/tracker#703, StandardSystemBars). Off by default.
+        // The home's system bars, hidden on request (Droidtop/tracker#703, SystemBars). Off by default.
         @JvmField
         val HIDE_STATUS_BAR = backedUpItem(SettingsHomeFragment.HIDE_STATUS_BAR, false)
         @JvmField

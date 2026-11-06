@@ -48,6 +48,11 @@ object MurineHooks {
     @JvmStatic
     var apps: AppHooks = AppHooks.DEFAULT
 
+    /** The host's work when the home shows, on a key or touch, and on a long Back. Murine's own: none. */
+    @Volatile
+    @JvmStatic
+    var home: HomeHooks = HomeHooks.DEFAULT
+
     private fun toast(context: Context, message: String) {
         Handler(Looper.getMainLooper()).post { Toast.makeText(context, message, Toast.LENGTH_SHORT).show() }
     }

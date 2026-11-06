@@ -1,20 +1,21 @@
-package dev.droidtop.shell.standard
+package app.murinelauncher.home
 
 import android.view.KeyEvent
+import app.murinelauncher.hooks.MurineHooks
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherState
 
 /**
- * Standard mode's pad map (Droidtop/tracker#699): the buttons a handheld's pad has beyond the D-pad and A, on the
- * home screen and in the drawer. L1/R1 turn the home pages, X opens the focused item's own menu (what a long press
- * opens: its shortcuts, Edit, Remove), Y opens droidtop's one search ([LauncherSearch]), Start opens the mode
- * switcher ([ModeSwitcher], the same as the Mode button on the taskbar's route). B is Android's Back, which already
+ * The launcher's pad map (Droidtop/tracker#699): the buttons a handheld's pad has beyond the D-pad and A, on the home
+ * screen and in the drawer. L1/R1 turn the home pages, X opens the focused item's own menu (what a long press opens:
+ * its shortcuts, Edit, Remove), Y opens the launcher's one search ([MurineHooks.search]), Start opens the host's mode
+ * switcher (the SWITCH_MODE host action; with no host, Start stays the launcher's own key). B is Android's Back, which already
  * closes the drawer, a folder or a menu. The keys a focused view takes (A on an icon) never reach here.
  */
-object StandardPad {
+object PadKeys {
     enum class Action { PREVIOUS_PAGE, NEXT_PAGE, ITEM_MENU, SEARCH, MODE_SWITCHER }
 
-    /** What [keyCode] means on Standard's home. Pure, for the tests. */
+    /** What [keyCode] means on the home. Pure, for the tests. */
     @JvmStatic
     fun actionFor(keyCode: Int): Action? = when (keyCode) {
         KeyEvent.KEYCODE_BUTTON_L1 -> Action.PREVIOUS_PAGE
@@ -50,8 +51,8 @@ object StandardPad {
                 val focused = launcher.currentFocus ?: return null
                 focused.performLongClick()
             }
-            Action.SEARCH -> LauncherSearch.open(launcher)
-            Action.MODE_SWITCHER -> ModeSwitcher.open(launcher)
+            Action.SEARCH -> MurineHooks.search.open(launcher, null)
+            Action.MODE_SWITCHER -> if (!MurineHooks.actions.run("SWITCH_MODE", launcher)) return null
         }
         return true
     }

@@ -73,7 +73,7 @@
         android:defaultValue="true"
         android:persistent="true" />
 
-    <!-- droidtop: the home's system bars (Droidtop/tracker#703, StandardSystemBars). -->
+    <!-- The home's system bars (Droidtop/tracker#703, SystemBars). -->
     <SwitchPreferenceCompat
         android:key="pref_hide_status_bar"
         android:title="@string/pref_hide_status_bar_title"

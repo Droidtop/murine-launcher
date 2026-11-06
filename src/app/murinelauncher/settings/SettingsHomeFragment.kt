@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
+import app.murinelauncher.home.SystemBars
 import app.murinelauncher.hooks.MurineHooks
 import app.murinelauncher.hooks.NoticeHooks
 import app.murinelauncher.receiver.ScreenOffAdminReceiver
@@ -168,7 +169,7 @@ public final class SettingsHomeFragment: AbstractSettingsFragment() {
                 return true
             }
             // Only where the device draws a navigation bar to hide (Droidtop/tracker#703).
-            HIDE_NAVIGATION_BAR -> return dev.droidtop.shell.standard.StandardSystemBars.hasNavigationBar(requireActivity().window.decorView)
+            HIDE_NAVIGATION_BAR -> return SystemBars.hasNavigationBar(requireActivity().window.decorView)
             BLUR_PREVIEW -> {
                 // Shown only where Android can blur; the card says so when it is on and the device cannot after all.
                 preference as SwitchPreferenceCompat
