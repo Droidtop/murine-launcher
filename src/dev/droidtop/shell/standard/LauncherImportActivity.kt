@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import app.murinelauncher.widget.DialogAccessibility
 import com.android.launcher3.R
 import com.android.launcher3.util.Executors
 import dev.droidtop.library.settings.Notices

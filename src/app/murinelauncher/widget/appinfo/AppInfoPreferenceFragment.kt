@@ -312,7 +312,7 @@ class AppInfoPreferenceFragment : SettingsBasePreferenceFragment() {
     private fun copyToClipboard(ctx: Context, label: CharSequence?, text: CharSequence?) {
         val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         clipboard.setPrimaryClip(ClipData.newPlainText(label, text))
-        dev.droidtop.library.settings.Notices.flash(ctx.getString(R.string.app_info_copied_toast), context = ctx)
+        app.murinelauncher.hooks.MurineHooks.notices.flash(ctx.getString(R.string.app_info_copied_toast), app.murinelauncher.hooks.NoticeHooks.Tone.Info)
     }
 
     @Suppress("RestrictedApi")

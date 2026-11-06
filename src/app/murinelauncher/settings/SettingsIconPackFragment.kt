@@ -74,7 +74,7 @@ class SettingsIconPackFragment : AbstractSettingsFragment() {
                                 appState.model.onAppIconChanged(pkg, android.os.Process.myUserHandle())
                             }
                             updateClearCustomIconsPref(preference)
-                            dev.droidtop.library.settings.Notices.flash(requireContext().getString(R.string.pref_clear_custom_icons_toast), context = requireContext())
+                            app.murinelauncher.hooks.MurineHooks.notices.flash(requireContext().getString(R.string.pref_clear_custom_icons_toast), app.murinelauncher.hooks.NoticeHooks.Tone.Info)
                         }
                         .setNegativeButton(android.R.string.cancel, null)
                         .show()

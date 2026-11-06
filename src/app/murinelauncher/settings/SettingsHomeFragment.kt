@@ -69,7 +69,7 @@ public final class SettingsHomeFragment: AbstractSettingsFragment() {
                 Thread {
                     dev.droidtop.runtime.keyboard.AccessibilityKeyboard.turnOn(context)
                 }.start()
-                dev.droidtop.library.settings.Notices.flash(context.resources.getString(R.string.pref_accessibility_request_toast), context = context)
+                app.murinelauncher.hooks.MurineHooks.notices.flash(context.resources.getString(R.string.pref_accessibility_request_toast), app.murinelauncher.hooks.NoticeHooks.Tone.Info)
                 return false
             }
             return true

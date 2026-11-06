@@ -38,10 +38,9 @@ public final class SettingsMiscFragment: AbstractSettingsFragment() {
         MODEL_EXECUTOR.execute {
             val status = BackupHelper.backup(app, uri)
             MAIN_EXECUTOR.execute {
-                dev.droidtop.library.settings.Notices.flash(
+                app.murinelauncher.hooks.MurineHooks.notices.flash(
                     if (status) app.getString(R.string.backup_export_done) else getFailedString(app),
-                    tone = if (status) dev.droidtop.library.settings.NoticeTone.Info else dev.droidtop.library.settings.NoticeTone.Caution,
-                    context = app,
+                    if (status) app.murinelauncher.hooks.NoticeHooks.Tone.Info else app.murinelauncher.hooks.NoticeHooks.Tone.Caution,
                 )
             }
         }
@@ -61,7 +60,7 @@ public final class SettingsMiscFragment: AbstractSettingsFragment() {
                         exitProcess(0)
                     }
                     else MAIN_EXECUTOR.execute {
-                        dev.droidtop.library.settings.Notices.flash(getFailedString(app), tone = dev.droidtop.library.settings.NoticeTone.Caution, context = app)
+                        app.murinelauncher.hooks.MurineHooks.notices.flash(getFailedString(app), app.murinelauncher.hooks.NoticeHooks.Tone.Caution)
                     }
                 }
             }.show()

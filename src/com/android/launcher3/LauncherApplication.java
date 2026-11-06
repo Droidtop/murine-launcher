@@ -37,6 +37,9 @@ public class LauncherApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        // Murine's own defaults for its hooks (app.murinelauncher.hooks) post with the application context; a host
+        // installs its own hooks after this.
+        app.murinelauncher.hooks.MurineHooks.attach(this);
         // droidtop patch: a contained plugin's isolated process (droidtop's
         // docs/plugin-api.md 5.3) has no files, no preferences and no
         // permissions, and runs nothing of the launcher's.

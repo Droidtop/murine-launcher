@@ -26,7 +26,7 @@ class RestartPreference @JvmOverloads constructor(context: Context, attrs: Attri
                         else recoveryHandler.uncaughtException(Thread.currentThread(), testException)
                     }, 250)
                 } else {
-                    dev.droidtop.library.settings.Notices.flash("${crashCountdown}...", context = context)
+                    app.murinelauncher.hooks.MurineHooks.notices.flash("${crashCountdown}...", app.murinelauncher.hooks.NoticeHooks.Tone.Info)
                     crashCountdown--
                 }
                 true

@@ -1,4 +1,4 @@
-package dev.droidtop.shell.standard
+package app.murinelauncher.widget
 
 import android.view.View
 import android.widget.Button
@@ -8,8 +8,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 
 /**
- * The accessibility half of droidtop's plain-View dialogs
- * ([BackButtonMenu], `RadioListDialog`; docs/SPEC.md, "Accessibility of the
+ * The accessibility half of the launcher's plain-View dialogs
+ * (`RadioListDialog`, and droidtop's `BackButtonMenu`; docs/SPEC.md, "Accessibility of the
  * custom dialogs"). Both replaced a stock AlertDialog list with individually
  * focusable rows so a D-pad reaches every one, and a stock list gave a
  * screen reader its roles for free: a row that is only a focusable

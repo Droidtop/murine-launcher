@@ -42,11 +42,7 @@ object WebSearch {
         } catch (e: RuntimeException) {
             // ActivityNotFoundException or SecurityException: no web search can be opened.
             Log.w(TAG, "No web search activity", e)
-            dev.droidtop.library.settings.Notices.flash(
-                context.getString(R.string.activity_not_found),
-                tone = dev.droidtop.library.settings.NoticeTone.Caution,
-                context = context,
-            )
+            app.murinelauncher.hooks.MurineHooks.notices.flash(context.getString(R.string.activity_not_found), app.murinelauncher.hooks.NoticeHooks.Tone.Caution)
         }
     }
 }

@@ -11,7 +11,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import dev.droidtop.shell.standard.DialogAccessibility
+import app.murinelauncher.widget.DialogAccessibility
 
 /**
  * droidtop's own replacement for [RadioGroupBottomSheet]'s single-select
