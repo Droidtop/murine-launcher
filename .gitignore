@@ -12,7 +12,5 @@ bin/
 .gradle/
 .kotlin/
 local.properties
-gradle/
 build/
-gradlew*
 .DS_Store

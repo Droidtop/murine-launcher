@@ -1,0 +1,31 @@
+// Murine as an app: the launcher library (the root project) with its Home entry. Built by the fork's CI to check
+// the launcher builds and runs without droidtop (Droidtop/tracker#921); it is not released.
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+}
+
+android {
+    namespace 'app.murinelauncher.app'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'app.murinelauncher.standalone'
+        minSdk 26
+        targetSdk 36
+        versionCode 1
+        versionName '0'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+}
+
+dependencies {
+    implementation project(':')
+}

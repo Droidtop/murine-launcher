@@ -1,0 +1,101 @@
+# The libraries and plugins the Murine launcher's build files use, at the versions droidtop builds it with
+# (taken from droidtop's gradle/libs.versions.toml, Droidtop/tracker#921). When droidtop builds the launcher as its
+# shell-default submodule, droidtop's own catalog is the one in use; keep the two at the same versions.
+[versions]
+agp = "8.13.1"
+annotation = "1.9.1"
+appcompat = "1.7.1"
+collection-ktx = "1.6.0-beta01"
+core = "1.17.0"
+core-v116 = "1.16.0"
+coreAnimation = "1.0.0"
+dagger = "2.57.2"
+dexmaker = "1.2"
+dexmakerMockito = "1.2"
+dynamicanimation = "1.1.0"
+error_prone_annotations = "2.47.0"
+fragment = "1.8.9"
+graphicsShapes = "1.1.0"
+guava = "33.5.0-android"
+javax-inject = "1"
+junit = "4.13.2"
+junitVersion = "1.3.0"
+kotlin = "2.2.21"
+kotlinx-coroutines = "1.10.2"
+kotlinx-serialization = "1.9.0"
+lifecycleRuntimeKtx = "2.8.4"
+lottie = "6.7.1"
+material = "1.14.0-alpha09"
+material3Version = "1.4.0"
+mockitoCore = "5.20.0"
+palette = "1.0.0"
+preference = "1.2.1"
+protobuf = "0.9.5"
+protobufJavalite = "4.33.2"
+recyclerview = "1.4.0"
+refine = "4.4.0"
+robolectric = "4.16"
+rules = "1.0.2"
+rulesVersion = "1.7.0"
+runner = "1.0.2"
+sdp-android = "1.1.1"
+sliceBuilders = "1.0.0"
+tracing = "2.0.0-alpha01"
+uiautomatorV18 = "2.1.3"
+window = "1.5.1"
+
+[libraries]
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-collection-ktx = { module = "androidx.collection:collection-ktx", version.ref = "collection-ktx" }
+androidx-core-animation = { module = "androidx.core:core-animation", version.ref = "coreAnimation" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core" }
+androidx-dynamicanimation = { module = "androidx.dynamicanimation:dynamicanimation", version.ref = "dynamicanimation" }
+androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "fragment" }
+androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", version.ref = "graphicsShapes" }
+androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3Version" }
+androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "palette" }
+androidx-preference = { module = "androidx.preference:preference", version.ref = "preference" }
+androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
+androidx-rules = { module = "androidx.test:rules", version.ref = "rulesVersion" }
+androidx-slice-builders = { module = "androidx.slice:slice-builders", version.ref = "sliceBuilders" }
+androidx-tracing = { module = "androidx.tracing:tracing", version.ref = "tracing" }
+androidx-window = { module = "androidx.window:window", version.ref = "window" }
+annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
+chickenhook-restrictionbypass = "com.github.ChickenHook:RestrictionBypass:c59bd6a680"
+core = { module = "androidx.core:core", version.ref = "core" }
+core-v116 = { module = "androidx.core:core", version.ref = "core-v116" }
+dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
+dexmaker = { module = "com.google.dexmaker:dexmaker", version.ref = "dexmaker" }
+dexmaker-mockito = { module = "com.google.dexmaker:dexmaker-mockito", version.ref = "dexmakerMockito" }
+dynamicanimation-ktx = { module = "androidx.dynamicanimation:dynamicanimation-ktx", version.ref = "dynamicanimation" }
+google-errorprone-annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "error_prone_annotations" }
+google-guava = { module = "com.google.guava:guava", version.ref = "guava" }
+intuit-sdp = { group = "com.intuit.sdp", name = "sdp-android", version.ref = "sdp-android" }
+javax-inject = { module = "javax.inject:javax.inject", version.ref = "javax-inject" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+kotlin-stdlib-jdk7 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
+kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
+protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobufJavalite" }
+rikka-annotation = { module = "dev.rikka.tools.refine:annotation", version.ref = "refine" }
+rikka-annotation-processor = { module = "dev.rikka.tools.refine:annotation-processor", version.ref = "refine" }
+rikka-refine-runtime = { group = "dev.rikka.tools.refine", name = "runtime", version.ref = "refine" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+rules = { module = "com.android.support.test:rules", version.ref = "rules" }
+runner = { module = "com.android.support.test:runner", version.ref = "runner" }
+uiautomator-v18 = { module = "com.android.support.test.uiautomator:uiautomator-v18", version.ref = "uiautomatorV18" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+google-ksp = { id = "com.google.devtools.ksp", version = "2.3.3" }
+google-protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+rikka-refine = { id = "dev.rikka.tools.refine", version.ref = "refine" }

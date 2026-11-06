@@ -1,0 +1,65 @@
+// The Murine launcher built on its own (Droidtop/tracker#921): the launcher library (this directory), the AOSP
+// libraries it carries, and murine-app, which packages it as an app. When droidtop builds the launcher as its
+// shell-default submodule, droidtop's settings include these same modules and this file is not read.
+pluginManagement {
+    // kapt is applied by id alone in build.gradle (droidtop's root build puts the Kotlin plugin on the classpath);
+    // here it takes the catalog's Kotlin version.
+    def kotlinVersion = (new File(settingsDir, 'gradle/libs.versions.toml').text =~ /(?m)^kotlin\s*=\s*"([^"]+)"/)[0][1]
+    plugins {
+        id 'org.jetbrains.kotlin.kapt' version kotlinVersion
+    }
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        // chickenhook-restrictionbypass, the framework stubs and murine-aircompressor are published only here.
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+rootProject.name = 'murine-launcher'
+
+include ':IconLoader'
+project(':IconLoader').projectDir = new File(rootDir, 'iconloaderlib')
+include ':Animation'
+project(':Animation').projectDir = new File(rootDir, 'animationlib')
+include ':Shared'
+project(':Shared').projectDir = new File(rootDir, 'shared')
+include ':WMShared'
+project(':WMShared').projectDir = new File(rootDir, 'wm_shared')
+include ':msdl'
+project(':msdl').projectDir = new File(rootDir, 'msdllib')
+include ':flags'
+project(':flags').projectDir = new File(rootDir, 'flagslib')
+include ':HiddenApi'
+project(':HiddenApi').projectDir = new File(rootDir, 'hidden-api')
+include ':SettingsLib-SettingsTheme'
+project(':SettingsLib-SettingsTheme').projectDir = new File(rootDir, 'SettingsLib/SettingsTheme')
+include ':SettingsLib-DataStore'
+project(':SettingsLib-DataStore').projectDir = new File(rootDir, 'SettingsLib/DataStore')
+include ':SettingsLib-Metadata'
+project(':SettingsLib-Metadata').projectDir = new File(rootDir, 'SettingsLib/Metadata')
+include ':SettingsLib-Preference'
+project(':SettingsLib-Preference').projectDir = new File(rootDir, 'SettingsLib/Preference')
+include ':SettingsLib-SliderPreference'
+project(':SettingsLib-SliderPreference').projectDir = new File(rootDir, 'SettingsLib/SliderPreference')
+include ':SettingsLib-SelectorWithWidgetPreference'
+project(':SettingsLib-SelectorWithWidgetPreference').projectDir = new File(rootDir, 'SettingsLib/SelectorWithWidgetPreference')
+include ':SettingsLib-ExpandablePreference'
+project(':SettingsLib-ExpandablePreference').projectDir = new File(rootDir, 'SettingsLib/ExpandablePreference')
+include ':SettingsLib-SegmentedButtonPreference'
+project(':SettingsLib-SegmentedButtonPreference').projectDir = new File(rootDir, 'SettingsLib/SegmentedButtonPreference')
+include ':SettingsLib-MainSwitchPreference'
+project(':SettingsLib-MainSwitchPreference').projectDir = new File(rootDir, 'SettingsLib/MainSwitchPreference')
+include ':systemUIPluginCore'
+project(':systemUIPluginCore').projectDir = new File(rootDir, 'systemUIPluginCore')
+
+include ':murine-app'
