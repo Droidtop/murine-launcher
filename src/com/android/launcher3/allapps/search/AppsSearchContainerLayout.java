@@ -37,14 +37,14 @@ import com.android.launcher3.allapps.ActivityAllAppsContainerView;
 import com.android.launcher3.allapps.SearchUiManager;
 import com.android.launcher3.views.ActivityContext;
 
-import dev.droidtop.shell.standard.LauncherSearch;
+import app.murinelauncher.hooks.MurineHooks;
 
 /**
  * The drawer's search field. It is a door, not a filter: a tap on it, Enter
- * on it, or a printable key typed in the drawer opens droidtop's search
- * screen ({@link LauncherSearch}), the shared library search with plugin
- * "Get more" results and Recommendations, so the drawer never filters its
- * own list in place and there is one search, not two.
+ * on it, or a printable key typed in the drawer opens the launcher's one
+ * search ({@link MurineHooks#getSearch()}; droidtop: its library search with
+ * plugin "Get more" results and Recommendations), so the drawer never filters
+ * its own list in place and there is one search, not two.
  */
 public class AppsSearchContainerLayout extends ExtendedEditText
         implements SearchUiManager, Insettable {
@@ -79,7 +79,7 @@ public class AppsSearchContainerLayout extends ExtendedEditText
         setCursorVisible(false);
         setLongClickable(false);
         setFocusableInTouchMode(false);
-        setOnClickListener(v -> LauncherSearch.open(getContext()));
+        setOnClickListener(v -> MurineHooks.getSearch().open(getContext(), null));
     }
 
     @Override
@@ -135,7 +135,7 @@ public class AppsSearchContainerLayout extends ExtendedEditText
                 && !Character.isWhitespace(unicodeChar) && !Character.isSpaceChar(unicodeChar);
         if (isKeyNotWhitespace && !event.isCtrlPressed() && !event.isAltPressed()
                 && !event.isMetaPressed()) {
-            LauncherSearch.open(getContext(), new String(Character.toChars(unicodeChar)));
+            MurineHooks.getSearch().open(getContext(), new String(Character.toChars(unicodeChar)));
         }
     }
 

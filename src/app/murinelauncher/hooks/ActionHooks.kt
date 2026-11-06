@@ -4,7 +4,7 @@ import android.content.Context
 
 /**
  * The host's own home actions: the gesture actions only a host has (droidtop: its Quick Menu, the mode switcher,
- * the library's Games, its companion, Clear all apps, its one search), and the accessibility service a host may
+ * the library's Games, its companion, Clear all apps), and the accessibility service a host may
  * perform global actions through. Murine's own actions (the drawer, notifications, recents, lock, opening an app)
  * never come here.
  *

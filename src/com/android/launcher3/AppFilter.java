@@ -3,12 +3,11 @@ package com.android.launcher3;
 import android.content.ComponentName;
 import android.content.Context;
 
+import app.murinelauncher.hooks.MurineHooks;
 import app.murinelauncher.settings.SettingsHiddenAppsFragment;
 import app.murinelauncher.settings.hiddenapps.HiddenAppsRepository;
 
 import com.android.launcher3.dagger.ApplicationContext;
-
-import dev.droidtop.runtime.LauncherSelfFilter;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -22,8 +21,8 @@ import javax.inject.Inject;
 public class AppFilter {
 
     /**
-     * droidtop patch: which of droidtop's own components show while its package is hidden is
-     * LauncherSelfFilter's one rule (the one icon and every widget provider). Widgets go through this same
+     * Which of the launcher's own components show while its package is hidden is the host's answer
+     * (MurineHooks.apps; droidtop: its one icon and every widget provider). Widgets go through this same
      * shouldShowApp in the picker (WidgetsModel.WidgetValidityCheckForPicker), and a hand list of classes
      * here once dropped seven of droidtop's nine widgets from it (rig, 2026-10-16). Whether a component is a
      * widget provider is read from its receiver's metadata once and remembered.
@@ -43,7 +42,7 @@ public class AppFilter {
                 .collect(Collectors.toSet());
     }
 
-    /** Whether droidtop's own [app] is an app widget provider (enabled or not: Desktop's is gated by mode). */
+    /** Whether the launcher's own [app] is an app widget provider (enabled or not: a host may gate one). */
     private boolean isSelfWidgetProvider(ComponentName app) {
         return mSelfWidgetProviders.computeIfAbsent(app, component -> {
             try {
@@ -68,12 +67,10 @@ public class AppFilter {
      */
     public boolean shouldShowApp(ComponentName app, boolean retainSearchable) {
         if (mFilteredComponents.contains(app)) return false;
-        // droidtop patch (not upstream Murine/Launcher3): droidtop's own
-        // package is hidden except for its one icon, which opens setup,
-        // Gaming or Desktop, or the library's games when both are off
-        // (docs/SPEC.md 2c, "One droidtop icon").
+        // The launcher's own package is hidden, except what the host shows of it (droidtop: its one icon,
+        // which opens setup, Gaming or Desktop, docs/SPEC.md 2c "One droidtop icon", and its widgets).
         if (SettingsHiddenAppsFragment.HIDE_SELF && app.getPackageName().equals(mContext.getPackageName())
-                && !LauncherSelfFilter.INSTANCE.shown(app.getClassName(), isSelfWidgetProvider(app))) return false;
+                && !MurineHooks.getApps().showsOwn(app.getClassName(), isSelfWidgetProvider(app))) return false;
         return !HiddenAppsRepository.isHidden(mContext, app) || (retainSearchable && HiddenAppsRepository.isSearchHiddenAppsEnabled(mContext));
     }
 }

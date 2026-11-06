@@ -58,8 +58,8 @@ enum class GestureAction(val id: String, val displayNameRes: Int, val summaryRes
     /** droidtop's companion as a pull-down sheet, for a device with one screen (docs/SPEC.md "The companion's tabs", One screen). */
     OPEN_COMPANION("OPEN_COMPANION", R.string.gesture_action_open_companion, R.string.gesture_action_open_companion_summary, host = true),
 
-    /** droidtop's one search over apps, the library and the download sources (docs/SPEC.md 12a "Launcher search"). */
-    OPEN_SEARCH("OPEN_SEARCH", R.string.gesture_action_open_search, R.string.gesture_action_open_search_summary, host = true),
+    /** The launcher's one search (MurineHooks.search; droidtop's covers apps, the library and the download sources). */
+    OPEN_SEARCH("OPEN_SEARCH", R.string.gesture_action_open_search, R.string.gesture_action_open_search_summary),
 
     /** The Quick Menu, the sheet Gaming's R2 and Desktop's tray open (`dev.droidtop.app.QuickMenuActivity`). */
     OPEN_QUICK_MENU("OPEN_QUICK_MENU", R.string.gesture_action_open_quick_menu, R.string.gesture_action_open_quick_menu_summary, host = true),
@@ -102,9 +102,13 @@ enum class GestureAction(val id: String, val displayNameRes: Int, val summaryRes
             performGlobal(launcher, AccessibilityService.GLOBAL_ACTION_RECENTS)
             true
         }
-        // A host's own action: the host runs it (droidtop: Clear all apps, its companion, its search, the Quick
-        // Menu, the mode switcher, the library's Games). With no host it does nothing.
-        CLEAR_ALL_APPS, OPEN_COMPANION, OPEN_SEARCH, OPEN_QUICK_MENU, SWITCH_MODE, OPEN_GAMES ->
+        OPEN_SEARCH -> {
+            MurineHooks.search.open(launcher, null)
+            true
+        }
+        // A host's own action: the host runs it (droidtop: Clear all apps, its companion, the Quick Menu, the mode
+        // switcher, the library's Games). With no host it does nothing.
+        CLEAR_ALL_APPS, OPEN_COMPANION, OPEN_QUICK_MENU, SWITCH_MODE, OPEN_GAMES ->
             MurineHooks.actions.run(id, launcher)
         LAUNCH_APP -> app != null && HomeActions.launchApp(launcher, app)
     }

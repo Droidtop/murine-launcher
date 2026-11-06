@@ -957,8 +957,8 @@ public class Launcher extends StatefulActivity<LauncherState>
                 if (results != null && !results.isEmpty()) {
                     // Result with highest confidence
                     String query = results.get(0);
-                    // droidtop patch: what was said goes to the one search, as typed text would.
-                    dev.droidtop.shell.standard.LauncherSearch.open(this, query);
+                    // What was said goes to the one search, as typed text would.
+                    app.murinelauncher.hooks.MurineHooks.getSearch().open(this, query);
                 }
             }
             return;

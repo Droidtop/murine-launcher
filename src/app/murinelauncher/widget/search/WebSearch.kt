@@ -11,9 +11,9 @@ import com.android.launcher3.R
 
 /**
  * A web search with the provider chosen in the search bar's settings ([SearchProvider], Settings > Search bar), else
- * the system's web search. droidtop patch (Droidtop/tracker#564): the home search bar opens droidtop's one search
- * (`LauncherSearchActivity`), and the web is one row there, "Search the web for ...", which comes here. It was a
- * search box of its own, with its own history (MurineSearchBoxView, deleted): two searches for one job.
+ * the system's web search: Murine's own search ([app.murinelauncher.hooks.SearchHooks.DEFAULT]), and a host search's
+ * web row (droidtop's "Search the web for ..."). It was a search box of its own, with its own history
+ * (MurineSearchBoxView, deleted): two searches for one job.
  */
 object WebSearch {
     private const val TAG = "WebSearch"

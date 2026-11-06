@@ -38,6 +38,16 @@ object MurineHooks {
     @JvmStatic
     var menus: MenuHooks = MenuHooks.DEFAULT
 
+    /** The launcher's one search. Murine's own: the web. */
+    @Volatile
+    @JvmStatic
+    var search: SearchHooks = SearchHooks.DEFAULT
+
+    /** Which of the launcher's own components it lists. Murine's own: none. */
+    @Volatile
+    @JvmStatic
+    var apps: AppHooks = AppHooks.DEFAULT
+
     private fun toast(context: Context, message: String) {
         Handler(Looper.getMainLooper()).post { Toast.makeText(context, message, Toast.LENGTH_SHORT).show() }
     }

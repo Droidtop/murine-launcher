@@ -181,8 +181,8 @@ public class DeviceProfile {
     public int iconTextSizePx;
 
     private final LabelVisibility mLabelVisibility;
-    // droidtop patch: the home screen's labels for mLabelVisibility (LauncherLabels).
-    private final dev.droidtop.runtime.LauncherLabels.Home mHomeLabels;
+    // The home screen's labels for mLabelVisibility (LauncherLabels).
+    private final app.murinelauncher.settings.prefs.LauncherLabels.Home mHomeLabels;
     private final float mDrawerPaddingScale;
     private final boolean mHideWorkspaceLabels; // True when labels must be hidden
     public int iconDrawablePaddingPx;
@@ -395,7 +395,7 @@ public class DeviceProfile {
         startAlignTaskbar = false;
         isTransientTaskbar = false;
         mLabelVisibility = LabelVisibility.AUTO;
-        mHomeLabels = dev.droidtop.runtime.LauncherLabels.Home.IF_ROOM;
+        mHomeLabels = app.murinelauncher.settings.prefs.LauncherLabels.Home.IF_ROOM;
         mDrawerPaddingScale = 1f;
         mHideWorkspaceLabels = false;
     }
@@ -432,9 +432,9 @@ public class DeviceProfile {
 
         mLabelVisibility = LauncherPrefs.get(context).get(LauncherPrefs.LABEL_VISIBILITY);
         mDrawerPaddingScale = LauncherPrefs.get(context).get(LauncherPrefs.DRAWER_PADDING) / 100f;
-        // droidtop patch (Droidtop/tracker#564): LauncherLabels is the one rule for what the setting means.
-        mHomeLabels = dev.droidtop.runtime.LauncherLabels.INSTANCE.home(mLabelVisibility.name());
-        mHideWorkspaceLabels = mHomeLabels == dev.droidtop.runtime.LauncherLabels.Home.HIDDEN;
+        // LauncherLabels is the one rule for what the setting means (Droidtop/tracker#564).
+        mHomeLabels = app.murinelauncher.settings.prefs.LauncherLabels.INSTANCE.home(mLabelVisibility.name());
+        mHideWorkspaceLabels = mHomeLabels == app.murinelauncher.settings.prefs.LauncherLabels.Home.HIDDEN;
         // Determine device posture.
         mInfo = info;
         isTablet = info.isTablet(windowBounds);
@@ -1298,7 +1298,7 @@ public class DeviceProfile {
             }
 
             if (mHideWorkspaceLabels
-                    || (isVerticalLayout && mHomeLabels == dev.droidtop.runtime.LauncherLabels.Home.IF_ROOM)) {
+                    || (isVerticalLayout && mHomeLabels == app.murinelauncher.settings.prefs.LauncherLabels.Home.IF_ROOM)) {
                 iconDrawablePaddingPx = 0;
                 iconTextSizePx = 0;
             } else {
@@ -1409,11 +1409,11 @@ public class DeviceProfile {
                 iconTextSizePx = 0;
                 iconDrawablePaddingPx = 0;
                 cellHeightPx = getIconSizeWithOverlap(iconSizePx);
-            } else if (isVerticalLayout && mHomeLabels == dev.droidtop.runtime.LauncherLabels.Home.IF_ROOM) {
+            } else if (isVerticalLayout && mHomeLabels == app.murinelauncher.settings.prefs.LauncherLabels.Home.IF_ROOM) {
                 hideWorkspaceLabelsIfNotEnoughSpace();
             }
         }
-        if (!dev.droidtop.runtime.LauncherLabels.INSTANCE.drawer(mLabelVisibility.name())) {
+        if (!app.murinelauncher.settings.prefs.LauncherLabels.INSTANCE.drawer(mLabelVisibility.name())) {
             allAppsCellHeightPx = (int) (((float) allAppsCellHeightPx) - allAppsIconTextSizePx - allAppsIconDrawablePaddingPx);
             allAppsIconTextSizePx = 0;
             allAppsIconDrawablePaddingPx = 0;

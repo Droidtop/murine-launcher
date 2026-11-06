@@ -2,6 +2,7 @@ package com.android.launcher3.allapps
 
 import android.content.ComponentName
 import android.content.Context
+import app.murinelauncher.drawer.SuggestedApps
 import app.murinelauncher.prefs.CachedPref
 import app.murinelauncher.prefs.LauncherPrefsFile
 import com.android.launcher3.util.Executors
@@ -82,7 +83,7 @@ object RecentAppsStore {
                 if (next.size <= MAX_COUNTED) next else next.entries.sortedByDescending { it.value }.take(MAX_COUNTED).associate { it.toPair() }
             }
             val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
-            hours.update(prefs) { map -> dev.droidtop.library.settings.SuggestedApps.recordHour(map, component.flattenToString(), hour) }
+            hours.update(prefs) { map -> SuggestedApps.recordHour(map, component.flattenToString(), hour) }
         }
     }
 
@@ -99,7 +100,7 @@ object RecentAppsStore {
     fun isRecentKey(key: String?): Boolean = key == KEY_RECENT_COMPONENTS
 
     /**
-     * The tracked components in the Suggested order for now ([dev.droidtop.library.settings.SuggestedApps.rank]): what
+     * The tracked components in the Suggested order for now ([SuggestedApps.rank]): what
      * is opened at this time of day first, then by recency (Droidtop/tracker#706).
      */
     @JvmStatic
@@ -108,7 +109,7 @@ object RecentAppsStore {
         val recentList = recent.get(prefs)
         val byName = recentList.associateBy { it.flattenToString() }
         val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
-        return dev.droidtop.library.settings.SuggestedApps.rank(byName.keys.toList(), hours.get(prefs), hour).mapNotNull { byName[it] }
+        return SuggestedApps.rank(byName.keys.toList(), hours.get(prefs), hour).mapNotNull { byName[it] }
     }
 
     /** Every tracked component, most-recent-first. */

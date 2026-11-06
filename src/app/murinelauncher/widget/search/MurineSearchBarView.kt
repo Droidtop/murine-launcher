@@ -17,6 +17,7 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import app.murinelauncher.hooks.MurineHooks
 import com.android.app.animation.Interpolators
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherConstants
@@ -88,9 +89,9 @@ class MurineSearchBarView @JvmOverloads constructor(
         lensButton.setOnClickListener { openLensOrVisualSearch() }
     }
 
-    /** droidtop patch (Droidtop/tracker#564): the bar opens droidtop's one search, where the web is one row ([WebSearch]). */
+    /** The bar opens the launcher's one search (MurineHooks.search; droidtop's, where the web is one row, [WebSearch]). */
     private fun openSearch() {
-        dev.droidtop.shell.standard.LauncherSearch.open(ActivityContext.lookupContext<Launcher>(context))
+        MurineHooks.search.open(ActivityContext.lookupContext<Launcher>(context), null)
     }
 
     private fun openVoiceSearch() {
