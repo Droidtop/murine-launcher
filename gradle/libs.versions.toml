@@ -26,7 +26,6 @@ kotlinx-serialization = "1.9.0"
 lifecycleRuntimeKtx = "2.8.4"
 lottie = "6.7.1"
 material = "1.14.0-alpha09"
-material3Version = "1.4.0"
 mockitoCore = "5.20.0"
 palette = "1.0.0"
 preference = "1.2.1"
@@ -54,7 +53,6 @@ androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "frag
 androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", version.ref = "graphicsShapes" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3Version" }
 androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "palette" }
 androidx-preference = { module = "androidx.preference:preference", version.ref = "preference" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
