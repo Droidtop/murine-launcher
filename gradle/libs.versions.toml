@@ -92,7 +92,6 @@ runner = { module = "com.android.support.test:runner", version.ref = "runner" }
 uiautomator-v18 = { module = "com.android.support.test.uiautomator:uiautomator-v18", version.ref = "uiautomatorV18" }
 
 [plugins]
-android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 google-ksp = { id = "com.google.devtools.ksp", version = "2.3.3" }
 google-protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }

@@ -1,8 +1,10 @@
 // Murine as an app: the launcher library (the root project) with its Home entry. Built by the fork's CI to check
 // the launcher builds and runs without droidtop (Droidtop/tracker#921); it is not released.
+// By id alone: the root project (the launcher library) already put AGP and Kotlin on the classpath, and Gradle
+// refuses a versioned request for a plugin already there (run 42287245323).
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
 }
 
 android {
