@@ -53,6 +53,16 @@ object MurineHooks {
     @JvmStatic
     var home: HomeHooks = HomeHooks.DEFAULT
 
+    /** The host's rows on the launcher's settings. Murine's own: none. */
+    @Volatile
+    @JvmStatic
+    var settings: SettingsHooks = SettingsHooks.DEFAULT
+
+    /** Light or dark. Murine's own: the system's. */
+    @Volatile
+    @JvmStatic
+    var theme: ThemeHooks = ThemeHooks.DEFAULT
+
     private fun toast(context: Context, message: String) {
         Handler(Looper.getMainLooper()).post { Toast.makeText(context, message, Toast.LENGTH_SHORT).show() }
     }

@@ -7,10 +7,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 
 /**
- * Standard's one way to ask for a file (Droidtop/tracker#771): the system's picker opens as the screen starts, and the
- * file chosen goes to [onPicked]. Nothing chosen finishes the screen. Registered with the activity result API, so a
+ * The launcher's one way to ask for a file (Droidtop/tracker#771): the system's picker opens as the screen starts, and
+ * the file chosen goes to [onPicked]. Nothing chosen finishes the screen. Registered with the activity result API, so a
  * screen recreated while the picker was open still gets the answer. Its screens are the picture for a home-screen item
- * ([ItemPictureActivity]) and the Nova or Apex backup to import ([LauncherImportActivity]).
+ * ([app.murinelauncher.homeitems.ItemPictureActivity]) and a host's (droidtop: the Nova or Apex backup to import).
  */
 abstract class DocumentPickActivity : ComponentActivity() {
     /** The kinds of file the picker offers. */

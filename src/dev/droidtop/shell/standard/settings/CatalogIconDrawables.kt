@@ -1,4 +1,4 @@
-package app.murinelauncher.settings.common
+package dev.droidtop.shell.standard.settings
 
 import androidx.annotation.DrawableRes
 import com.android.launcher3.R
@@ -19,7 +19,7 @@ import dev.droidtop.library.settings.CatalogIcon
  * sibling's drawable, exactly as they share a glyph there.
  */
 @DrawableRes
-internal fun CatalogIcon.drawableRes(): Int = when (this) {
+fun CatalogIcon.drawableRes(): Int = when (this) {
     CatalogIcon.GLOBAL -> R.drawable.ic_catalog_global
     CatalogIcon.MODES -> R.drawable.ic_catalog_modes
     CatalogIcon.DATA -> R.drawable.ic_catalog_data

@@ -28,7 +28,7 @@ import dev.droidtop.library.settings.Modes
  * in every mode.
  */
 object BackButtonMenu {
-    private const val GLOBAL_SETTINGS_FRAGMENT = "app.murinelauncher.settings.SettingsGlobalFragment"
+    private const val GLOBAL_SETTINGS_FRAGMENT = "dev.droidtop.shell.standard.settings.SettingsGlobalFragment"
     const val EXTRA_MODE = "dev.droidtop.app.EXTRA_MODE"
 
     // Real, deep-link-only extras used by SettingsGamingFragment (same

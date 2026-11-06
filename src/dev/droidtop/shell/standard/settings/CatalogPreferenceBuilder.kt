@@ -1,4 +1,4 @@
-package app.murinelauncher.settings.common
+package dev.droidtop.shell.standard.settings
 
 import android.app.AlertDialog
 import android.content.Context
@@ -33,6 +33,7 @@ import androidx.preference.PreferenceViewHolder
 import androidx.preference.SwitchPreferenceCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import app.murinelauncher.settings.common.RowFocusRing
 import app.murinelauncher.widget.CustomSeekBarPreference
 import com.android.launcher3.R
 import dev.droidtop.library.settings.ActionItem

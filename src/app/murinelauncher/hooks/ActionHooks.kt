@@ -1,6 +1,8 @@
 package app.murinelauncher.hooks
 
 import android.content.Context
+import android.content.Intent
+import android.provider.Settings
 
 /**
  * The host's own home actions: the gesture actions only a host has (droidtop: its Quick Menu, the mode switcher,
@@ -28,12 +30,22 @@ interface ActionHooks {
      */
     fun performGlobalAction(action: Int): Boolean
 
+    /**
+     * Asks for the accessibility service global actions go through. Returns true when it is already on; otherwise it
+     * starts turning it on (or opens Android's accessibility settings) and returns false, and the launcher says so.
+     */
+    fun requestAccessibility(context: Context): Boolean
+
     companion object {
         /** Murine on its own: no host actions, no host accessibility service. */
         val NONE: ActionHooks = object : ActionHooks {
             override fun offers(id: String) = false
             override fun run(id: String, context: Context) = false
             override fun performGlobalAction(action: Int) = false
+            override fun requestAccessibility(context: Context): Boolean {
+                context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                return false
+            }
         }
     }
 }

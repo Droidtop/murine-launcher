@@ -158,6 +158,6 @@ class ItemPictureActivity : DocumentPickActivity() {
     }
 
     companion object {
-        const val EXTRA_ID = "dev.droidtop.extra.ITEM_ID"
+        const val EXTRA_ID = "app.murinelauncher.extra.ITEM_ID"
     }
 }

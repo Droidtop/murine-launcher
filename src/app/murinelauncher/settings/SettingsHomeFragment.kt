@@ -66,12 +66,8 @@ public final class SettingsHomeFragment: AbstractSettingsFragment() {
 
         @JvmStatic @RequiresApi(Build.VERSION_CODES.P)
         fun requestAccessibilityPermission(context: Context): Boolean {
-            // droidtop's one accessibility service (Droidtop/tracker#740), turned on the one way: elevated access
-            // when droidtop has it, else Android's accessibility page.
-            if (!dev.droidtop.runtime.keyboard.AccessibilityKeyboard.isActive(context)) {
-                Thread {
-                    dev.droidtop.runtime.keyboard.AccessibilityKeyboard.turnOn(context)
-                }.start()
+            // The host's accessibility service (MurineHooks.actions; droidtop's one, Droidtop/tracker#740).
+            if (!MurineHooks.actions.requestAccessibility(context)) {
                 MurineHooks.notices.flash(context.resources.getString(R.string.pref_accessibility_request_toast), NoticeHooks.Tone.Info)
                 return false
             }
@@ -161,6 +157,8 @@ public final class SettingsHomeFragment: AbstractSettingsFragment() {
                 return true
             }
             TASKBAR -> {
+                // The taskbar is the host's (droidtop's StandardTaskbar): shown only with one.
+                if (!MurineHooks.settings.offers(TASKBAR)) return false
                 // Turning it on asks for the accessibility access its window needs.
                 preference.setOnPreferenceChangeListener { _, newValue ->
                     if (newValue == true && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) requestAccessibilityPermission(requireContext())

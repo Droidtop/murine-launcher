@@ -2,18 +2,16 @@ package app.murinelauncher.theme
 
 import android.content.Context
 import android.content.res.Configuration
-import android.content.SharedPreferences
 import android.content.res.Resources
 import app.murinelauncher.icons.IconPackManager
 import androidx.appcompat.app.AppCompatDelegate
 import com.android.launcher3.LauncherAppState
-import dev.droidtop.library.settings.AppearancePrefs
-import dev.droidtop.library.settings.CatalogPrefs
+import app.murinelauncher.hooks.MurineHooks
 
 /**
- * Light or dark for the launcher. droidtop patch: the choice is droidtop's one Appearance setting
- * ([AppearancePrefs], Settings > Appearance; docs/SPEC.md 7k, Droidtop/tracker#560), not Murine's own "UI theme"
- * preference, which is gone: two settings for one job let the home screen disagree with every other droidtop screen.
+ * Light or dark for the launcher: the host's one choice ([MurineHooks.theme]; droidtop: Settings > Appearance,
+ * Droidtop/tracker#560), else the system's. Murine's own "UI theme" preference is gone: two settings for one job let
+ * the home screen disagree with every other screen of its host.
  */
 object ThemeOverride {
     const val THEME_SYSTEM = 0
@@ -21,28 +19,20 @@ object ThemeOverride {
     const val THEME_DARK = 2
 
     @JvmStatic
-    fun getThemePref(context: Context): Int = when (AppearancePrefs.choice(context)) {
-        AppearancePrefs.LIGHT -> THEME_LIGHT
-        AppearancePrefs.DARK -> THEME_DARK
-        else -> THEME_SYSTEM
-    }
-
-    /** Held so the registration lives as long as the process (SharedPreferences keeps listeners weakly). */
-    private var appearanceWatch: SharedPreferences.OnSharedPreferenceChangeListener? = null
+    fun getThemePref(context: Context): Int = MurineHooks.theme.choice(context)
 
     /**
-     * Follows a change of Appearance from any droidtop screen: the night mode is set again and, with an icon pack
-     * in use, icons are reloaded so the pack's day or night set shows. Open launcher activities see themselves
-     * stale on their next start and recreate ([isThemeStale]).
+     * Follows a change of the host's choice: the night mode is set again and, with an icon pack in use, icons are
+     * reloaded so the pack's day or night set shows. Open launcher activities see themselves stale on their next start
+     * and recreate ([isThemeStale]).
      */
     @JvmStatic
     fun watchAppearance(context: Context) {
         val app = context.applicationContext
-        appearanceWatch = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key != AppearancePrefs.KEY_APPEARANCE) return@OnSharedPreferenceChangeListener
+        MurineHooks.theme.watch(app) {
             syncNightMode(app)
             if (IconPackManager.isAnyPackActive(app)) LauncherAppState.getInstance(app).model.forceReload()
-        }.also { CatalogPrefs.prefs(app).registerOnSharedPreferenceChangeListener(it) }
+        }
     }
 
     @JvmStatic

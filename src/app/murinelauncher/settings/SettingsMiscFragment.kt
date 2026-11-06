@@ -26,6 +26,7 @@ public final class SettingsMiscFragment: AbstractSettingsFragment() {
         const val BACKUP_EXPORT: String = "pref_backup_export"
         const val BACKUP_IMPORT: String = "pref_backup_import"
         const val LAUNCHER_IMPORT: String = "pref_launcher_import"
+        const val HOME_SCREEN: String = "pref_home_screen"
         private const val BACKUP_MIME = "application/octet-stream"
     }
 
@@ -91,10 +92,12 @@ public final class SettingsMiscFragment: AbstractSettingsFragment() {
                 }
                 return true
             }
-            LAUNCHER_IMPORT -> {
-                // Droidtop/tracker#564: a Nova or Apex backup as Standard's home screen.
+            // A Nova or Apex backup as the home screen (Droidtop/tracker#564), and the host's home screen choice: only a
+            // host has them (MurineHooks.settings).
+            LAUNCHER_IMPORT, HOME_SCREEN -> {
+                if (!MurineHooks.settings.offers(preference.key)) return false
                 preference.setOnPreferenceClickListener {
-                    context.startActivity(Intent(context, dev.droidtop.shell.standard.LauncherImportActivity::class.java))
+                    MurineHooks.settings.run(preference.key, it.context)
                     true
                 }
                 return true

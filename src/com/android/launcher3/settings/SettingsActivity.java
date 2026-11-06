@@ -50,15 +50,10 @@ public class SettingsActivity extends FragmentActivity
     // Intent extra to indicate the pref-key of the root screen when opening the settings activity
     public static final String EXTRA_FRAGMENT_ROOT_KEY = ARG_PREFERENCE_ROOT;
 
-    // Real droidtop-wide settings hub (app.murinelauncher.settings.SettingsGlobalFragment,
-    // dev.droidtop.library.theme's own real config lives elsewhere) -- a
-    // real, persistent toolbar action on every SettingsActivity instance
-    // (see onCreateOptionsMenu/onOptionsItemSelected below), not a row in
-    // any one shell's own preference list. Directly requested: a
-    // "Gaming mode"-titled screen visually claiming a "Global settings"
-    // row as its own was confusing -- this is genuinely separate from,
-    // and shown above, whichever shell's settings happen to be showing.
-    private static final String GLOBAL_SETTINGS_FRAGMENT = "app.murinelauncher.settings.SettingsGlobalFragment";
+    // The host's toolbar action (MurineHooks.settings; droidtop: Global settings), on every
+    // SettingsActivity instance (see onCreateOptionsMenu/onOptionsItemSelected below), not a row in
+    // any one screen's own list: a "Gaming mode"-titled screen visually claiming a "Global settings"
+    // row as its own was confusing, so it is separate from, and shown above, whichever screen shows.
     private String mCurrentFragmentName;
 
     @Override
@@ -167,12 +162,18 @@ public class SettingsActivity extends FragmentActivity
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        // Real, deliberate: no "go to Global settings" action while
-        // already ON Global settings -- a real no-op link there would
-        // just be confusing, not harmful.
-        MenuItem globalSettings = menu.findItem(R.id.action_global_settings);
-        if (globalSettings != null) {
-            globalSettings.setVisible(!GLOBAL_SETTINGS_FRAGMENT.equals(mCurrentFragmentName));
+        // No host action, and none while already on the screen it opens: a no-op link there would
+        // only confuse.
+        MenuItem hostAction = menu.findItem(R.id.action_global_settings);
+        if (hostAction != null) {
+            app.murinelauncher.hooks.SettingsHooks.Row row =
+                    app.murinelauncher.hooks.MurineHooks.getSettings().toolbarRow(this);
+            hostAction.setVisible(row != null
+                    && (row.getFragment() == null || !row.getFragment().equals(mCurrentFragmentName)));
+            if (row != null) {
+                hostAction.setTitle(row.getTitle());
+                if (row.getIcon() != 0) hostAction.setIcon(row.getIcon());
+            }
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -184,7 +185,12 @@ public class SettingsActivity extends FragmentActivity
             return true;
         }
         if (item.getItemId() == R.id.action_global_settings) {
-            return startPreference(GLOBAL_SETTINGS_FRAGMENT, null, null);
+            app.murinelauncher.hooks.SettingsHooks.Row row =
+                    app.murinelauncher.hooks.MurineHooks.getSettings().toolbarRow(this);
+            if (row == null) return true;
+            if (row.getFragment() != null) return startPreference(row.getFragment(), null, null);
+            app.murinelauncher.hooks.MurineHooks.getSettings().run(row.getId(), this);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -26,13 +26,12 @@
         android:summary="@string/pref_category_hidden_apps_summary"
         android:fragment="app.murinelauncher.settings.SettingsHiddenAppsFragment" />
 
-    <!-- The home screen is a setting of droidtop as a whole (Droidtop/tracker#571 row 11): this row opens
-         the droidtop-wide Settings page, where "droidtop is your home screen" and "Home opens" are. -->
+    <!-- The home screen is a setting of the host as a whole (droidtop: Droidtop/tracker#571 row 11, its
+         Settings page, where "droidtop is your home screen" and "Home opens" are); shown only with a host. -->
     <Preference
         android:key="pref_home_screen"
         android:title="@string/pref_home_screen_title"
-        android:summary="@string/pref_home_screen_summary"
-        android:fragment="app.murinelauncher.settings.SettingsGlobalFragment" />
+        android:summary="@string/pref_home_screen_summary" />
 
     <app.murinelauncher.widget.RestartPreference
         android:key="pref_restart"

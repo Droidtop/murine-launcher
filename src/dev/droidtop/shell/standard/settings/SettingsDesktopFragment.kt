@@ -1,9 +1,8 @@
-package app.murinelauncher.settings
+package dev.droidtop.shell.standard.settings
 
 import android.os.Bundle
 import androidx.preference.Preference
 import app.murinelauncher.settings.common.AbstractSettingsFragment
-import app.murinelauncher.settings.common.CatalogPreferenceNavigator
 import com.android.launcher3.LauncherFiles
 import com.android.launcher3.R
 import com.android.launcher3.util.DisplayController

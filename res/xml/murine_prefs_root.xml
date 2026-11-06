@@ -19,17 +19,6 @@
     xmlns:launcher="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- droidtop: Global settings as the first row, where the modes are
-         switched on and off. It was only an unlabelled action-bar icon,
-         and the rig found no way back to Modes after turning Gaming off
-         (dq-coordinator-23, F5). The action-bar item stays for the other
-         settings screens. -->
-    <Preference
-        android:icon="@drawable/ic_settings_general"
-        android:title="@string/pref_global_settings_title"
-        android:summary="@string/pref_global_settings_desc"
-        android:fragment="app.murinelauncher.settings.SettingsGlobalFragment"/>
-
     <Preference
         android:icon="@drawable/ic_settings_icons"
         android:title="@string/pref_category_icons_title"
@@ -56,32 +45,6 @@
         android:summary="@string/pref_category_misc_desc"
         android:fragment="app.murinelauncher.settings.SettingsMiscFragment"/>
 
-    <!-- droidtop: the places (Stores, Social, Downloads and installs,
-         Updates, Plugins). Standard has no left menu, so its settings list
-         is where they are reached; each row opens droidtop's screen host
-         (SettingsRootFragment sets the titles and intents from the one
-         place list, Place, and hides them in Kiosk and Kid). -->
-    <PreferenceCategory
-        android:key="pref_places"
-        android:title="@string/pref_subcategory_places">
-        <Preference android:key="pref_place_stores" />
-        <Preference android:key="pref_place_social" />
-        <Preference android:key="pref_place_plugin_jobs" />
-        <Preference android:key="pref_place_updates" />
-        <Preference android:key="pref_place_plugins" />
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/pref_subcategory_other_shells">
-        <Preference
-            android:icon="@drawable/ic_catalog_desktop"
-            android:title="@string/pref_category_desktop_title"
-            android:summary="@string/pref_category_desktop_desc"
-            android:fragment="app.murinelauncher.settings.SettingsDesktopFragment"/>
-        <Preference
-            android:icon="@drawable/ic_catalog_gaming"
-            android:title="@string/pref_category_gaming_title"
-            android:summary="@string/pref_category_gaming_desc"
-            android:fragment="app.murinelauncher.settings.SettingsGamingFragment"/>
-    </PreferenceCategory>
-
+    <!-- The host's rows (MurineHooks.settings) are added by SettingsRootFragment: above these, or in sections
+         after them. -->
 </androidx.preference.PreferenceScreen>
