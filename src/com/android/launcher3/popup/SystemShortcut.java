@@ -362,23 +362,24 @@ public abstract class SystemShortcut<T extends ActivityContext> extends ItemInfo
             Context context = mOriginalView.getContext();
             String component = mItemInfo.getTargetComponent().flattenToString();
             java.util.List<DrawerTabs.Tab> tabs = DrawerTabs.tabs(context);
-            java.util.List<dev.droidtop.ui.shared.MenuViews.Row> rows = new java.util.ArrayList<>();
+            java.util.List<app.murinelauncher.hooks.MenuHooks.Row> rows = new java.util.ArrayList<>();
             for (DrawerTabs.Tab tab : tabs) {
                 boolean member = tab.getApps().contains(component);
-                rows.add(new dev.droidtop.ui.shared.MenuViews.Row(tab.getName(), () -> {
+                rows.add(new app.murinelauncher.hooks.MenuHooks.Row(tab.getName(), () -> {
                     DrawerTabs.setMember(context, tab.getName(), component, !member);
                     tabsChanged(context);
                 }, member));
             }
-            rows.add(new dev.droidtop.ui.shared.MenuViews.Row(context.getString(R.string.drawer_tab_new),
+            rows.add(new app.murinelauncher.hooks.MenuHooks.Row(context.getString(R.string.drawer_tab_new),
                     () -> DrawerTabsRow.askName(context, null, name -> {
                         boolean added = DrawerTabs.add(context, name, component);
                         if (added) tabsChanged(context);
                         return added;
                     })));
             dismissTaskMenuView();
-            // The one anchored menu beside the app's icon, in the colours outside Gaming (Droidtop/tracker#827).
-            dev.droidtop.ui.shared.MenuViews.show(mOriginalView, context.getString(R.string.drawer_tabs_option), rows);
+            // The menu beside the app's icon (MurineHooks.menus).
+            app.murinelauncher.hooks.MurineHooks.getMenus().show(mOriginalView,
+                    context.getString(R.string.drawer_tabs_option), rows, null);
         }
 
         private static void tabsChanged(Context context) {
@@ -404,9 +405,8 @@ public abstract class SystemShortcut<T extends ActivityContext> extends ItemInfo
     };
 
     /**
-     * droidtop (Droidtop/tracker#67): "Plugin actions" on an app's long-press menu, on the home screen and in the
-     * drawer, when a plugin offers a context action for that app. Answered from memory (PluginShellHooks); the
-     * actions themselves are asked and run on the page it opens.
+     * The host's entry on an app's long-press menu, on the home screen and in the drawer (MurineHooks.menus; droidtop:
+     * "Plugin actions" when a plugin offers a context action for that app, Droidtop/tracker#67).
      */
     public static final Factory<ActivityContext> PLUGIN_ACTIONS = (context, itemInfo, originalView) -> {
         if (itemInfo.itemType != LauncherSettings.Favorites.ITEM_TYPE_APPLICATION
@@ -415,17 +415,17 @@ public abstract class SystemShortcut<T extends ActivityContext> extends ItemInfo
         }
         String label = itemInfo.title != null ? itemInfo.title.toString()
                 : itemInfo.getTargetComponent().getPackageName();
-        dev.droidtop.library.settings.PluginShellHooks.MenuEntry entry =
-                dev.droidtop.library.settings.PluginShellHooks.appMenu(originalView.getContext(),
+        app.murinelauncher.hooks.MenuHooks.Entry entry =
+                app.murinelauncher.hooks.MurineHooks.getMenus().appEntry(originalView.getContext(),
                         itemInfo.getTargetComponent().getPackageName(), label);
         return entry == null ? null : new PluginActionsShortcut(context, itemInfo, originalView, entry);
     };
 
     private static class PluginActionsShortcut<T extends ActivityContext> extends SystemShortcut<T> {
-        private final dev.droidtop.library.settings.PluginShellHooks.MenuEntry mEntry;
+        private final app.murinelauncher.hooks.MenuHooks.Entry mEntry;
 
         PluginActionsShortcut(T target, ItemInfo itemInfo, View originalView,
-                dev.droidtop.library.settings.PluginShellHooks.MenuEntry entry) {
+                app.murinelauncher.hooks.MenuHooks.Entry entry) {
             super(R.drawable.ic_plugin_action, R.string.plugin_actions_option, target, itemInfo, originalView);
             mEntry = entry;
         }
@@ -433,7 +433,7 @@ public abstract class SystemShortcut<T extends ActivityContext> extends ItemInfo
         @Override
         public void onClick(View view) {
             dismissTaskMenuView();
-            dev.droidtop.library.settings.PluginShellHooks.run(mEntry, mOriginalView.getContext());
+            app.murinelauncher.hooks.MurineHooks.getMenus().run(mEntry.getId(), mOriginalView.getContext());
         }
     }
 

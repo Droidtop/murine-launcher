@@ -206,47 +206,16 @@ public class OptionsPopupView<T extends Context & ActivityContext> extends Arrow
         // droidtop patch (not upstream): no mode switcher row. Long-press HOME is Mobile's one route to it (owner,
         // 2026-10-30, Droidtop/tracker#827: "Long pressing HOME is what gets the mode switcher. Why do we need other
         // routes, we've made the home button the sole controller").
-        // droidtop patch: the library's games grid, whatever modes are on
-        // (with Gaming on, the droidtop icon opens Gaming instead).
-        options.add(new OptionItem(launcher,
-                R.string.droidtop_games_option,
-                R.drawable.ic_widget,
-                IGNORE,
-                v -> {
-                    dev.droidtop.shell.standard.DroidtopScreens.openGames(v.getContext());
-                    return true;
-                }));
-        // droidtop patch: the Quick Menu, the same sheet Gaming's R2 opens (docs/SPEC.md,
-        // Launcher mode "Gestures"); a gesture can open it too.
-        options.add(new OptionItem(launcher,
-                R.string.gesture_action_open_quick_menu,
-                R.drawable.ic_setting,
-                IGNORE,
-                v -> {
-                    dev.droidtop.shell.standard.DroidtopScreens.openQuickMenu(v.getContext());
-                    return true;
-                }));
-        // droidtop patch: the companion as a pull-down sheet, while the device has no second
-        // screen to hold it (docs/SPEC.md "The companion's tabs", One screen).
-        if (dev.droidtop.runtime.CompanionSheet.offered(launcher)) {
-            options.add(new OptionItem(launcher,
-                    R.string.droidtop_companion_option,
-                    R.drawable.ic_widget,
-                    IGNORE,
-                    v -> {
-                        dev.droidtop.runtime.CompanionSheet.open(v.getContext(), false);
-                        return true;
-                    }));
-        }
-        // droidtop patch: plugins on the Android home screen (docs/plugin-api.md 1.9): their
-        // panels ("Plugins") and their launcher.actions, answered from memory by droidtop.
-        for (dev.droidtop.library.settings.PluginShellHooks.MenuEntry entry
-                : dev.droidtop.library.settings.PluginShellHooks.homeMenu(launcher)) {
+        // The host's own entries (MurineHooks.menus; droidtop: its games grid, its Quick Menu, its companion while the
+        // device has one screen, and plugins' entries, docs/plugin-api.md 1.9).
+        for (app.murinelauncher.hooks.MenuHooks.Entry entry
+                : app.murinelauncher.hooks.MurineHooks.getMenus().homeEntries(launcher)) {
             options.add(new OptionItem(entry.getLabel(),
-                    ContextCompat.getDrawable(launcher, R.drawable.ic_widget),
+                    ContextCompat.getDrawable(launcher,
+                            "setting".equals(entry.getIcon()) ? R.drawable.ic_setting : R.drawable.ic_widget),
                     IGNORE,
                     v -> {
-                        dev.droidtop.library.settings.PluginShellHooks.run(entry, v.getContext());
+                        app.murinelauncher.hooks.MurineHooks.getMenus().run(entry.getId(), v.getContext());
                         return true;
                     }));
         }

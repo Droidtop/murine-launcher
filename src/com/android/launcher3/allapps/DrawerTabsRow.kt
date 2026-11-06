@@ -9,7 +9,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
-import dev.droidtop.ui.shared.MenuViews
+import app.murinelauncher.hooks.MenuHooks
+import app.murinelauncher.hooks.MurineHooks
 import app.murinelauncher.settings.prefs.DrawerTabs
 import com.android.launcher3.R
 
@@ -89,22 +90,22 @@ class DrawerTabsRow @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     private fun edit(anchor: View, tab: String) {
-        // The one anchored menu beside the tab, in the colours outside Gaming (MenuViews, Droidtop/tracker#827).
+        // The menu beside the tab (MurineHooks.menus).
         val asFolder = DrawerTabs.tabs(context).firstOrNull { it.name == tab }?.folder == true
         val rows = listOf(
-            MenuViews.Row(context.getString(R.string.drawer_tab_rename), {
+            MenuHooks.Row(context.getString(R.string.drawer_tab_rename), {
                 askName(context, tab) { name -> DrawerTabs.rename(context, tab, name).also { if (it) onTabsChanged() } }
             }),
-            MenuViews.Row(context.getString(R.string.drawer_tab_move_left), { DrawerTabs.move(context, tab, -1); onTabsChanged() }),
-            MenuViews.Row(context.getString(R.string.drawer_tab_move_right), { DrawerTabs.move(context, tab, +1); onTabsChanged() }),
-            MenuViews.Row(
+            MenuHooks.Row(context.getString(R.string.drawer_tab_move_left), { DrawerTabs.move(context, tab, -1); onTabsChanged() }),
+            MenuHooks.Row(context.getString(R.string.drawer_tab_move_right), { DrawerTabs.move(context, tab, +1); onTabsChanged() }),
+            MenuHooks.Row(
                 context.getString(R.string.drawer_tab_as_folder),
                 { DrawerTabs.setFolder(context, tab, !asFolder); onTabsChanged() },
                 asFolder,
             ),
-            MenuViews.Row(context.getString(R.string.drawer_tab_delete), { DrawerTabs.delete(context, tab); onTabsChanged() }),
+            MenuHooks.Row(context.getString(R.string.drawer_tab_delete), { DrawerTabs.delete(context, tab); onTabsChanged() }),
         )
-        MenuViews.show(anchor, tab, rows)
+        MurineHooks.menus.show(anchor, tab, rows, null)
     }
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()

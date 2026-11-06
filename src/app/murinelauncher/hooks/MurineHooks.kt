@@ -33,6 +33,11 @@ object MurineHooks {
     @JvmStatic
     var actions: ActionHooks = ActionHooks.NONE
 
+    /** The launcher's small menus and the host's menu entries. Murine's own: a platform popup, no host entries. */
+    @Volatile
+    @JvmStatic
+    var menus: MenuHooks = MenuHooks.DEFAULT
+
     private fun toast(context: Context, message: String) {
         Handler(Looper.getMainLooper()).post { Toast.makeText(context, message, Toast.LENGTH_SHORT).show() }
     }

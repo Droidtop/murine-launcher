@@ -125,7 +125,6 @@
     <string name="gesture_action_clear_all_apps">Close all apps</string>
     <string name="gesture_action_open_companion">Companion</string>
     <string name="gesture_action_open_companion_summary">Pulls down droidtop\'s companion: pinned controls, notifications, apps and more</string>
-    <string name="droidtop_companion_option">Companion</string>
     <string name="gesture_action_open_search">Search</string>
     <string name="gesture_action_open_search_summary">Searches apps, your games and the download sources</string>
     <string name="gesture_action_open_quick_menu">Quick Menu</string>
@@ -259,7 +258,6 @@
     <string name="pref_home_screen_summary">Whether droidtop is your home screen, and which screen Home opens</string>
     <string name="pref_restart_title">Restart</string>
     <string name="pref_restart_summary">Restart the launcher</string>
-    <string name="droidtop_games_option">droidtop games</string>
     <string name="pref_global_settings_desc">Modes, your home screen and setup</string>
     <!-- droidtop: an open folder's options (Droidtop/tracker#564). -->
     <string name="folder_options">Folder options</string>
