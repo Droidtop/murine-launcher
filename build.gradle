@@ -103,6 +103,10 @@ android {
                 srcDirs = ['protos/', 'protos_overrides/']
             }
         }
+        // The launcher's own JVM unit tests (Droidtop/tracker#921): outside src/, which is all main source here.
+        test {
+            java.srcDirs = ['unit_tests']
+        }
     }
 
     compileOptions {
