@@ -8,6 +8,8 @@ import android.os.Looper
 import android.util.AttributeSet
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
+import app.murinelauncher.hooks.MurineHooks
+import app.murinelauncher.hooks.NoticeHooks
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.Utilities
 
@@ -26,7 +28,7 @@ class RestartPreference @JvmOverloads constructor(context: Context, attrs: Attri
                         else recoveryHandler.uncaughtException(Thread.currentThread(), testException)
                     }, 250)
                 } else {
-                    app.murinelauncher.hooks.MurineHooks.notices.flash("${crashCountdown}...", app.murinelauncher.hooks.NoticeHooks.Tone.Info)
+                    MurineHooks.notices.flash("${crashCountdown}...", NoticeHooks.Tone.Info)
                     crashCountdown--
                 }
                 true

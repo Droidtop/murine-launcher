@@ -6,6 +6,8 @@ import android.os.Looper
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
+import app.murinelauncher.hooks.MurineHooks
+import app.murinelauncher.hooks.NoticeHooks
 import app.murinelauncher.icons.IconPackManager
 import app.murinelauncher.icons.IconPackManager.SYSTEM_ICON_PACK_INFO
 import app.murinelauncher.settings.common.AbstractSettingsFragment
@@ -74,7 +76,7 @@ class SettingsIconPackFragment : AbstractSettingsFragment() {
                                 appState.model.onAppIconChanged(pkg, android.os.Process.myUserHandle())
                             }
                             updateClearCustomIconsPref(preference)
-                            app.murinelauncher.hooks.MurineHooks.notices.flash(requireContext().getString(R.string.pref_clear_custom_icons_toast), app.murinelauncher.hooks.NoticeHooks.Tone.Info)
+                            MurineHooks.notices.flash(requireContext().getString(R.string.pref_clear_custom_icons_toast), NoticeHooks.Tone.Info)
                         }
                         .setNegativeButton(android.R.string.cancel, null)
                         .show()

@@ -25,6 +25,8 @@ import app.lawnchair.icons.getCustomInstanceLabelForId
 import app.lawnchair.icons.getCustomLabelForKey
 import app.lawnchair.icons.setCustomInstanceLabelForId
 import app.lawnchair.icons.setCustomLabelForKey
+import app.murinelauncher.hooks.MurineHooks
+import app.murinelauncher.hooks.NoticeHooks
 import app.murinelauncher.icons.IconPackManager
 import app.murinelauncher.icons.IconPackManager.IconPackInfo
 import app.murinelauncher.widget.radio.RadioGroupBottomSheet
@@ -312,7 +314,7 @@ class AppInfoPreferenceFragment : SettingsBasePreferenceFragment() {
     private fun copyToClipboard(ctx: Context, label: CharSequence?, text: CharSequence?) {
         val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         clipboard.setPrimaryClip(ClipData.newPlainText(label, text))
-        app.murinelauncher.hooks.MurineHooks.notices.flash(ctx.getString(R.string.app_info_copied_toast), app.murinelauncher.hooks.NoticeHooks.Tone.Info)
+        MurineHooks.notices.flash(ctx.getString(R.string.app_info_copied_toast), NoticeHooks.Tone.Info)
     }
 
     @Suppress("RestrictedApi")

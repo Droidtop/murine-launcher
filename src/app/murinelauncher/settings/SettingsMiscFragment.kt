@@ -6,6 +6,8 @@ import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.preference.Preference
 import app.murinelauncher.backup.BackupHelper
+import app.murinelauncher.hooks.MurineHooks
+import app.murinelauncher.hooks.NoticeHooks
 import app.murinelauncher.settings.common.AbstractSettingsFragment
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -38,9 +40,9 @@ public final class SettingsMiscFragment: AbstractSettingsFragment() {
         MODEL_EXECUTOR.execute {
             val status = BackupHelper.backup(app, uri)
             MAIN_EXECUTOR.execute {
-                app.murinelauncher.hooks.MurineHooks.notices.flash(
+                MurineHooks.notices.flash(
                     if (status) app.getString(R.string.backup_export_done) else getFailedString(app),
-                    if (status) app.murinelauncher.hooks.NoticeHooks.Tone.Info else app.murinelauncher.hooks.NoticeHooks.Tone.Caution,
+                    if (status) NoticeHooks.Tone.Info else NoticeHooks.Tone.Caution,
                 )
             }
         }
@@ -60,7 +62,7 @@ public final class SettingsMiscFragment: AbstractSettingsFragment() {
                         exitProcess(0)
                     }
                     else MAIN_EXECUTOR.execute {
-                        app.murinelauncher.hooks.MurineHooks.notices.flash(getFailedString(app), app.murinelauncher.hooks.NoticeHooks.Tone.Caution)
+                        MurineHooks.notices.flash(getFailedString(app), NoticeHooks.Tone.Caution)
                     }
                 }
             }.show()

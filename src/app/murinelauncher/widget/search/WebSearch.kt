@@ -5,6 +5,8 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import app.murinelauncher.hooks.MurineHooks
+import app.murinelauncher.hooks.NoticeHooks
 import com.android.launcher3.R
 
 /**
@@ -42,7 +44,7 @@ object WebSearch {
         } catch (e: RuntimeException) {
             // ActivityNotFoundException or SecurityException: no web search can be opened.
             Log.w(TAG, "No web search activity", e)
-            app.murinelauncher.hooks.MurineHooks.notices.flash(context.getString(R.string.activity_not_found), app.murinelauncher.hooks.NoticeHooks.Tone.Caution)
+            MurineHooks.notices.flash(context.getString(R.string.activity_not_found), NoticeHooks.Tone.Caution)
         }
     }
 }
