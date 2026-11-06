@@ -23,6 +23,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
     id("org.jetbrains.kotlin.kapt")
     alias(libs.plugins.rikka.refine)
     alias(libs.plugins.google.ksp)
@@ -209,6 +210,8 @@ dependencies {
     implementation libs.androidx.palette.ktx
     implementation libs.material
     implementation libs.kotlinx.coroutines
+    // WidgetStackTable's stored form.
+    implementation libs.kotlinx.serialization.json
     // Real lifecycleScope, for SettingsHandheldFragment's own real
     // "Sync theme index" action (a real coroutine-based network call --
     // ThemeDownloader.syncThemesList -- that must not outlive the

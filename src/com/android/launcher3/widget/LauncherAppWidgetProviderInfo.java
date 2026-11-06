@@ -188,9 +188,9 @@ public class LauncherAppWidgetProviderInfo extends AppWidgetProviderInfo impleme
         // grid, and one no profile measured through as 0x0 ("Calendar 0x0", rig, build 2011).
         boolean resizesX = (resizeMode & RESIZE_HORIZONTAL) != 0 || forceResizableX;
         boolean resizesY = (resizeMode & RESIZE_VERTICAL) != 0 || forceResizableY;
-        this.mIsMinSizeFulfilled = dev.droidtop.runtime.WidgetFit.INSTANCE.fits(
-                dev.droidtop.runtime.WidgetFit.INSTANCE.smallest(spanX, minSpanX, resizesX),
-                dev.droidtop.runtime.WidgetFit.INSTANCE.smallest(spanY, minSpanY, resizesY),
+        this.mIsMinSizeFulfilled = app.murinelauncher.widgets.WidgetFit.INSTANCE.fits(
+                app.murinelauncher.widgets.WidgetFit.INSTANCE.smallest(spanX, minSpanX, resizesX),
+                app.murinelauncher.widgets.WidgetFit.INSTANCE.smallest(spanY, minSpanY, resizesY),
                 idp.numColumns, idp.numRows);
         // Ensures the default span X and span Y will not exceed the current grid size.
         this.spanX = Math.min(spanX, idp.numColumns);
