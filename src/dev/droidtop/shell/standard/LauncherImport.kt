@@ -15,6 +15,7 @@ import androidx.annotation.WorkerThread
 import app.lawnchair.icons.setCustomLabelForKey
 import app.murinelauncher.gestures.HomeAction
 import app.murinelauncher.gestures.HomeActions
+import app.murinelauncher.homeitems.HomeItemExtras
 import app.murinelauncher.icons.IconPackManager
 import app.murinelauncher.settings.hiddenapps.HiddenAppsRepository
 import app.murinelauncher.settings.prefs.DrawerTabs

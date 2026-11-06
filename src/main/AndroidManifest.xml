@@ -222,9 +222,9 @@
             android:excludeFromRecents="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
-        <!-- droidtop: the image picker for one home-screen item's picture (ItemCustomize). -->
+        <!-- The image picker for one home-screen item's picture (ItemCustomize). -->
         <activity
-            android:name="dev.droidtop.shell.standard.ItemPictureActivity"
+            android:name="app.murinelauncher.homeitems.ItemPictureActivity"
             android:exported="false"
             android:excludeFromRecents="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />

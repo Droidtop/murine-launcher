@@ -500,10 +500,10 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         }
         // The folder's own picture, drawn in place of its preview (HomeItemExtras).
         rows.add(new dev.droidtop.ui.shared.MenuViews.Row(getContext().getString(R.string.folder_option_picture),
-                !editable ? null : () -> dev.droidtop.shell.standard.ItemCustomize.choosePicture(getContext(), mInfo.id)));
-        if (dev.droidtop.shell.standard.HomeItemExtras.INSTANCE.picture(mInfo) != null) {
+                !editable ? null : () -> app.murinelauncher.homeitems.ItemCustomize.choosePicture(getContext(), mInfo.id)));
+        if (app.murinelauncher.homeitems.HomeItemExtras.INSTANCE.picture(mInfo) != null) {
             rows.add(new dev.droidtop.ui.shared.MenuViews.Row(getContext().getString(R.string.item_customize_picture_remove),
-                    !editable ? null : () -> dev.droidtop.shell.standard.ItemCustomize.removePicture(getContext(), mInfo.id)));
+                    !editable ? null : () -> app.murinelauncher.homeitems.ItemCustomize.removePicture(getContext(), mInfo.id)));
         }
         CharSequence name = mInfo.title;
         String title = name != null && name.length() > 0 ? name.toString() : getContext().getString(R.string.folder_options);

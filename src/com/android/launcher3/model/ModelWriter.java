@@ -295,7 +295,7 @@ public class ModelWriter {
                 mModel.getModelDbController().delete(itemIdMatch(item.id), null);
                 mBgDataModel.removeItem(mContext, item);
                 // droidtop patch: the item's own title, picture and swipes go with it.
-                dev.droidtop.shell.standard.HomeItemExtras.INSTANCE.forget(mContext, item.id);
+                app.murinelauncher.homeitems.HomeItemExtras.INSTANCE.forget(mContext, item.id);
                 verifier.verifyModel();
             }
         }));
@@ -312,8 +312,8 @@ public class ModelWriter {
             mModel.getModelDbController().delete(
                     Favorites.CONTAINER + "=" + info.id, null);
             for (ItemInfo child : info.getContents())
-                dev.droidtop.shell.standard.HomeItemExtras.INSTANCE.forget(mContext, child.id);
-            dev.droidtop.shell.standard.HomeItemExtras.INSTANCE.forget(mContext, info.id);
+                app.murinelauncher.homeitems.HomeItemExtras.INSTANCE.forget(mContext, child.id);
+            app.murinelauncher.homeitems.HomeItemExtras.INSTANCE.forget(mContext, info.id);
             mBgDataModel.removeItem(mContext, info.getContents());
             info.getContents().clear();
 

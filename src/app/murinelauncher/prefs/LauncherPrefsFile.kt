@@ -1,9 +1,8 @@
-package dev.droidtop.shell.standard
+package app.murinelauncher.prefs
 
 import android.content.Context
 import android.util.Log
 import com.android.launcher3.LauncherFiles
-import dev.droidtop.runtime.CachedPref
 
 /**
  * Standard's own preferences file (the launcher's, backed up with it) as the place a [CachedPref] keeps its string.
@@ -24,6 +23,6 @@ class LauncherPrefsFile(context: Context) : CachedPref.Backing {
     }
 
     private companion object {
-        const val TAG = "droidtop.prefs"
+        const val TAG = "LauncherPrefs"
     }
 }

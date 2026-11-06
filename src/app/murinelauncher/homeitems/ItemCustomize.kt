@@ -1,4 +1,4 @@
-package dev.droidtop.shell.standard
+package app.murinelauncher.homeitems
 
 import android.app.AlertDialog
 import android.content.Context
@@ -6,8 +6,12 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import app.murinelauncher.gestures.HomeActions
+import app.murinelauncher.hooks.MurineHooks
+import app.murinelauncher.hooks.NoticeHooks
+import app.murinelauncher.widget.DocumentPickActivity
 import app.murinelauncher.widget.radio.RadioGroupBottomSheet
 import app.murinelauncher.widget.radio.RadioListDialog
 import com.android.launcher3.BubbleTextView
@@ -15,8 +19,6 @@ import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.util.Executors
-import dev.droidtop.library.settings.NoticeTone
-import dev.droidtop.library.settings.Notices
 
 /**
  * The person's own options for one home-screen app icon (docs/SPEC.md, Launcher mode "Per-icon options";
@@ -24,7 +26,7 @@ import dev.droidtop.library.settings.Notices
  * or down on it does. Kept by [HomeItemExtras]. A folder's picture is set from the folder's own options.
  */
 object ItemCustomize {
-    private const val TAG = "droidtop.ItemCustomize"
+    private const val TAG = "ItemCustomize"
 
     /** The options dialog for [info], an app icon on the home screen, in the dock or in a folder. */
     fun show(context: Context, info: ItemInfo, view: View?) {
@@ -71,7 +73,8 @@ object ItemCustomize {
             setSingleLine()
             selectAll()
             // No full-screen input method over the dialog (as every droidtop field, NoFullscreenTextInput).
-            imeOptions = dev.droidtop.ui.shared.noFullscreen(imeOptions)
+            // The input method stays out of full screen, so the sheet stays visible while typing.
+            imeOptions = imeOptions or EditorInfo.IME_FLAG_NO_FULLSCREEN or EditorInfo.IME_FLAG_NO_EXTRACT_UI
         }
         AlertDialog.Builder(context, R.style.DroidtopDialog)
             .setTitle(R.string.item_customize_title_ask)
@@ -114,7 +117,7 @@ object ItemCustomize {
                 LauncherAppState.getInstance(app).model.forceReload()
             } else {
                 Executors.MAIN_EXECUTOR.execute {
-                    Notices.flash(app.getString(R.string.item_customize_picture_failed), tone = NoticeTone.Caution, context = app)
+                    MurineHooks.notices.flash(app.getString(R.string.item_customize_picture_failed), NoticeHooks.Tone.Caution)
                 }
             }
         }
@@ -150,7 +153,7 @@ class ItemPictureActivity : DocumentPickActivity() {
     }
 
     override fun onNoPicker() {
-        Notices.flash(getString(R.string.item_customize_picture_failed), tone = NoticeTone.Caution, context = this)
+        MurineHooks.notices.flash(getString(R.string.item_customize_picture_failed), NoticeHooks.Tone.Caution)
         finish()
     }
 

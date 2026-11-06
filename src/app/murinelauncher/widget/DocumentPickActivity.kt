@@ -1,4 +1,4 @@
-package dev.droidtop.shell.standard
+package app.murinelauncher.widget
 
 import android.net.Uri
 import android.os.Bundle

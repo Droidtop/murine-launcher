@@ -109,7 +109,7 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
     // Swipe to open (FolderInfo.FLAG_SWIPE_TO_OPEN, Droidtop/tracker#564): where the touch went down, whether this
     // icon took the gesture from the workspace, and whether it opened the folder (the rest of the touch is then
     // swallowed so the tap does not also start the first app).
-    private dev.droidtop.shell.standard.IconSwipe mSwipe;
+    private app.murinelauncher.homeitems.IconSwipe mSwipe;
     // The cover (FolderInfo.FLAG_COVER): the first app's icon, made again when the folder's contents change.
     private Drawable mCover;
 
@@ -176,7 +176,7 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
 
     private void init() {
         mLongPressHelper = new CheckLongPressHelper(this);
-        mSwipe = new dev.droidtop.shell.standard.IconSwipe(this,
+        mSwipe = new app.murinelauncher.homeitems.IconSwipe(this,
                 up -> up && mInfo != null && mInfo.hasOption(FolderInfo.FLAG_SWIPE_TO_OPEN),
                 up -> {
                     Folder folder = getFolder();
@@ -655,14 +655,14 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
     private boolean drawCover(Canvas canvas) {
         if (mInfo == null || mAnimating) return false;
         if (mCover == null) {
-            android.graphics.Bitmap picture = dev.droidtop.shell.standard.HomeItemExtras.INSTANCE.picture(mInfo);
+            android.graphics.Bitmap picture = app.murinelauncher.homeitems.HomeItemExtras.INSTANCE.picture(mInfo);
             if (picture != null) {
                 mCover = com.android.launcher3.icons.BitmapInfo.fromBitmap(picture).newIcon(getContext());
             } else {
                 if (!mInfo.hasOption(FolderInfo.FLAG_COVER)) return false;
                 WorkspaceItemInfo first = mInfo.firstApp();
                 if (first == null) return false;
-                mCover = dev.droidtop.shell.standard.HomeItemExtras.newIcon(getContext(), first, 0);
+                mCover = app.murinelauncher.homeitems.HomeItemExtras.newIcon(getContext(), first, 0);
             }
         }
         int iconSize = mActivity.getDeviceProfile().iconSizePx;

@@ -1,4 +1,4 @@
-package dev.droidtop.shell.standard
+package app.murinelauncher.homeitems
 
 import android.view.MotionEvent
 import android.view.View

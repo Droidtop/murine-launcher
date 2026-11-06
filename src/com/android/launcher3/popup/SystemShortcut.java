@@ -445,7 +445,7 @@ public abstract class SystemShortcut<T extends ActivityContext> extends ItemInfo
         @Override
         public void onClick(View view) {
             dismissTaskMenuView();
-            dev.droidtop.shell.standard.ItemCustomize.INSTANCE.show(
+            app.murinelauncher.homeitems.ItemCustomize.INSTANCE.show(
                     mOriginalView.getContext(), mItemInfo, mOriginalView);
         }
     }

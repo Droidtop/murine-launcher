@@ -1,8 +1,8 @@
 package app.murinelauncher.settings.prefs
 
 import android.content.Context
-import dev.droidtop.runtime.CachedPref
-import dev.droidtop.shell.standard.LauncherPrefsFile
+import app.murinelauncher.prefs.CachedPref
+import app.murinelauncher.prefs.LauncherPrefsFile
 import org.json.JSONArray
 import org.json.JSONObject
 

@@ -447,7 +447,7 @@ public class PreviewItemManager {
             if (isActivePendingIcon(wii)) {
                 p.drawable = newPendingIcon(mContext, wii);
             } else {
-                p.drawable = dev.droidtop.shell.standard.HomeItemExtras.newIcon(
+                p.drawable = app.murinelauncher.homeitems.HomeItemExtras.newIcon(
                         mContext, wii, FLAG_THEMED);
             }
             p.drawable.setBounds(0, 0, mIconSize, mIconSize);

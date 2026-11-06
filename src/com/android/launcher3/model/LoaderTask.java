@@ -504,7 +504,7 @@ public class LoaderTask implements Runnable {
                 }
                 tryLoadWorkspaceIconsInBulk(mWorkspaceIconRequestInfos);
                 // droidtop patch: the pictures people gave items, read here so views never read files.
-                dev.droidtop.shell.standard.HomeItemExtras.INSTANCE.loadPictures(mContext);
+                app.murinelauncher.homeitems.HomeItemExtras.INSTANCE.loadPictures(mContext);
             } finally {
                 IOUtils.closeSilently(c);
             }

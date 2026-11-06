@@ -212,7 +212,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
 
     private final CheckLongPressHelper mLongPressHelper;
     /** droidtop: this icon's own swipes on the home screen (HomeItemExtras, IconSwipe). */
-    private final dev.droidtop.shell.standard.IconSwipe mIconSwipe;
+    private final app.murinelauncher.homeitems.IconSwipe mIconSwipe;
 
     private boolean mLayoutHorizontal;
     private final boolean mIsRtl;
@@ -359,7 +359,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
                 R.color.taskbar_minimized_app_indicator_color, context.getTheme());
 
         mLongPressHelper = new CheckLongPressHelper(this);
-        mIconSwipe = new dev.droidtop.shell.standard.IconSwipe(this,
+        mIconSwipe = new app.murinelauncher.homeitems.IconSwipe(this,
                 up -> swipeAction(up) != null,
                 up -> {
                     app.murinelauncher.gestures.HomeActions.INSTANCE.run(
@@ -620,7 +620,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         }
         // droidtop patch: the person's own picture for this item, if any (HomeItemExtras).
         FastBitmapDrawable iconDrawable =
-                dev.droidtop.shell.standard.HomeItemExtras.newIcon(getContext(), info, flags);
+                app.murinelauncher.homeitems.HomeItemExtras.newIcon(getContext(), info, flags);
         mDotParams.appColor = iconDrawable.getIconColor();
         mDotParams.dotColor = Themes.getAttrColor(getContext(), R.attr.notificationDotColor);
         setIcon(iconDrawable);
@@ -644,7 +644,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     @UiThread
     public void applyLabel(ItemInfo info) {
         // droidtop patch: the title the person gave this one icon, if any (HomeItemExtras).
-        CharSequence label = dev.droidtop.shell.standard.HomeItemExtras.INSTANCE.title(info);
+        CharSequence label = app.murinelauncher.homeitems.HomeItemExtras.INSTANCE.title(info);
         if (label == null) label = info.title;
         if (label != null) {
             mLastOriginalText = label;
@@ -721,7 +721,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
                 || !(ActivityContext.lookupContext(getContext()) instanceof Launcher)) {
             return null;
         }
-        return dev.droidtop.shell.standard.HomeItemExtras.INSTANCE.swipe(getContext(), info.id, up);
+        return app.murinelauncher.homeitems.HomeItemExtras.INSTANCE.swipe(getContext(), info.id, up);
     }
 
     @Override
