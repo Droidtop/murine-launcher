@@ -7,8 +7,8 @@ import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherState
 import com.android.launcher3.MotionEventsUtils
 import com.android.launcher3.util.TouchController
-import dev.droidtop.shell.standard.HomeActions
-import dev.droidtop.runtime.StandardGestures
+import app.murinelauncher.gestures.HomeActions
+import app.murinelauncher.gestures.StandardGestures
 import kotlin.math.hypot
 
 /**
@@ -42,7 +42,7 @@ class MultiFingerGestureController(private val mLauncher: Launcher) : TouchContr
                 }
                 val dy = midY(ev) - mStartMidY
                 val dSpan = span(ev) - mStartSpan
-                // Which slot it is: StandardGestures, the one rule, tested in :runtime-common.
+                // Which slot it is: StandardGestures, the one rule, tested beside it (StandardGesturesTest).
                 val slot = GestureSlot.of(StandardGestures.twoFinger(dy, dSpan, mThreshold) ?: return false).pref
                 mTracking = false
                 return HomeActions.runSlot(mLauncher, slot)

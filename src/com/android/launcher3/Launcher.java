@@ -1770,11 +1770,11 @@ public class Launcher extends StatefulActivity<LauncherState>
                     // droidtop patch (Droidtop/tracker#564): Home pressed while already on the
                     // first page runs the Home button's gesture slot, as in Nova and Apex; on any
                     // other page it still goes to the first page.
-                    if (dev.droidtop.runtime.StandardGestures.INSTANCE.homeRunsSlot(
+                    if (app.murinelauncher.gestures.StandardGestures.INSTANCE.homeRunsSlot(
                             mWorkspace.getNextPage() == Workspace.DEFAULT_PAGE,
-                            dev.droidtop.shell.standard.HomeActions.INSTANCE.isSet(this,
+                            app.murinelauncher.gestures.HomeActions.INSTANCE.isSet(this,
                                     LauncherPrefs.GESTURE_HOME_BUTTON_ACTION))) {
-                        mWorkspace.post(() -> dev.droidtop.shell.standard.HomeActions.INSTANCE.runSlot(
+                        mWorkspace.post(() -> app.murinelauncher.gestures.HomeActions.INSTANCE.runSlot(
                                 this, LauncherPrefs.GESTURE_HOME_BUTTON_ACTION));
                     } else {
                         mWorkspace.post(mWorkspace::moveToDefaultScreen);

@@ -13,6 +13,8 @@ import android.provider.OpenableColumns
 import android.util.Log
 import androidx.annotation.WorkerThread
 import app.lawnchair.icons.setCustomLabelForKey
+import app.murinelauncher.gestures.HomeAction
+import app.murinelauncher.gestures.HomeActions
 import app.murinelauncher.icons.IconPackManager
 import app.murinelauncher.settings.hiddenapps.HiddenAppsRepository
 import app.murinelauncher.settings.prefs.DrawerTabs
@@ -232,8 +234,8 @@ object LauncherImport {
                 is PlanItem.App -> {
                     item.customTitle?.let { HomeItemExtras.setTitle(id, it) }
                     item.customIcon?.let { if (!HomeItemExtras.setPicture(context, id, it)) Log.w(TAG, "item $id's picture is not an image") }
-                    item.swipeUp?.let { swipes += HomeItemExtras.SwipeChange(id, up = true, it) }
-                    item.swipeDown?.let { swipes += HomeItemExtras.SwipeChange(id, up = false, it) }
+                    item.swipeUp?.let { swipes += HomeItemExtras.SwipeChange(id, up = true, it.toLauncher()) }
+                    item.swipeDown?.let { swipes += HomeItemExtras.SwipeChange(id, up = false, it.toLauncher()) }
                 }
                 is PlanItem.Folder -> item.customIcon?.let { HomeItemExtras.setPicture(context, id, it) }
                 is PlanItem.Widget -> {}
@@ -251,10 +253,16 @@ object LauncherImport {
         put(Favorites.SPANY, 1)
     }
 
+    /**
+     * The import's action (droidtop's `HomeAction`, from runtime-common's Nova and Apex readers) as the launcher's: the
+     * two share one stored form, so this is exact (Droidtop/tracker#921).
+     */
+    private fun dev.droidtop.runtime.HomeAction.toLauncher(): HomeAction? = HomeAction.decode(encoded)
+
     /** Everything that is not an item: gestures, hidden apps, drawer tabs and titles, icon pack, labels. */
     private fun applySettings(context: Context, plan: ImportPlan) {
         for ((slot, action) in plan.gestures) {
-            com.android.launcher3.touch.GestureSlot.byName(slot)?.let { HomeActions.setSlot(context, it.pref, action) }
+            com.android.launcher3.touch.GestureSlot.byName(slot)?.let { HomeActions.setSlot(context, it.pref, action?.toLauncher()) }
         }
         if (plan.hiddenApps.isNotEmpty()) {
             HiddenAppsRepository.setHiddenComponents(context, HiddenAppsRepository.getHiddenComponents(context) + plan.hiddenApps)

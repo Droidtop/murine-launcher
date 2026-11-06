@@ -5,6 +5,9 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.os.Build
+import app.murinelauncher.gestures.HomeActions
+import app.murinelauncher.gestures.StandardGestures
+import app.murinelauncher.hooks.MurineHooks
 import app.murinelauncher.receiver.ScreenOffAdminReceiver
 import app.murinelauncher.settings.SettingsHomeFragment
 import app.murinelauncher.widget.accessibility.AlertDialogSheet
@@ -20,17 +23,18 @@ import com.android.launcher3.Utilities
  * gesture hardcoding one fixed action -- Nova/Apex's "map any gesture to
  * any action" (docs/SPEC.md, Launcher mode survey, "Assignable gesture
  * actions"). [LAUNCH_APP] starts an app the person picked, kept beside the
- * slot's own preference and handed to [perform]; dev.droidtop.shell.standard.HomeActions
- * runs every slot.
+ * slot's own preference and handed to [perform]; HomeActions
+ * runs every slot. Actions only a host has (droidtop's) are run by the host through
+ * [MurineHooks.actions] and shown only where it offers them ([isOffered]).
  *
- * [id] is what a saved action holds (an icon's swipe, `HomeAction.Droidtop`, and the
+ * [id] is what a saved action holds (an icon's swipe, `HomeAction.Action`, and the
  * Nova and Apex import's `ImportActions`): written out per constant, so renaming a
  * constant never turns a saved action into nothing (Droidtop/tracker#771).
  * The slots are double-tap, swipe down, two-finger swipe down and up,
  * pinch in and out ([MultiFingerGestureController]), and the Home button
  * pressed while already on the first page.
  */
-enum class GestureAction(val id: String, val displayNameRes: Int, val summaryRes: Int) {
+enum class GestureAction(val id: String, val displayNameRes: Int, val summaryRes: Int, val host: Boolean = false) {
     NONE("NONE", R.string.gesture_action_none, R.string.gesture_action_none_summary),
     LOCK_SCREEN("LOCK_SCREEN", R.string.gesture_action_lock_screen, R.string.gesture_action_lock_screen_summary),
     OPEN_NOTIFICATIONS(
@@ -49,28 +53,31 @@ enum class GestureAction(val id: String, val displayNameRes: Int, val summaryRes
     OPEN_RECENTS("OPEN_RECENTS", R.string.gesture_action_open_recents, R.string.gesture_action_open_recents_summary),
 
     /** The task manager's Clear all apps (docs/SPEC.md "The task manager"): it asks first when more than a few would close. */
-    CLEAR_ALL_APPS("CLEAR_ALL_APPS", R.string.gesture_action_clear_all_apps, R.string.gesture_action_clear_all_apps_summary),
+    CLEAR_ALL_APPS("CLEAR_ALL_APPS", R.string.gesture_action_clear_all_apps, R.string.gesture_action_clear_all_apps_summary, host = true),
 
     /** droidtop's companion as a pull-down sheet, for a device with one screen (docs/SPEC.md "The companion's tabs", One screen). */
-    OPEN_COMPANION("OPEN_COMPANION", R.string.gesture_action_open_companion, R.string.gesture_action_open_companion_summary),
+    OPEN_COMPANION("OPEN_COMPANION", R.string.gesture_action_open_companion, R.string.gesture_action_open_companion_summary, host = true),
 
     /** droidtop's one search over apps, the library and the download sources (docs/SPEC.md 12a "Launcher search"). */
-    OPEN_SEARCH("OPEN_SEARCH", R.string.gesture_action_open_search, R.string.gesture_action_open_search_summary),
+    OPEN_SEARCH("OPEN_SEARCH", R.string.gesture_action_open_search, R.string.gesture_action_open_search_summary, host = true),
 
     /** The Quick Menu, the sheet Gaming's R2 and Desktop's tray open (`dev.droidtop.app.QuickMenuActivity`). */
-    OPEN_QUICK_MENU("OPEN_QUICK_MENU", R.string.gesture_action_open_quick_menu, R.string.gesture_action_open_quick_menu_summary),
+    OPEN_QUICK_MENU("OPEN_QUICK_MENU", R.string.gesture_action_open_quick_menu, R.string.gesture_action_open_quick_menu_summary, host = true),
 
     /** The mode switcher, as the Back button's menu opens it. */
-    SWITCH_MODE("SWITCH_MODE", R.string.gesture_action_switch_mode, R.string.gesture_action_switch_mode_summary),
+    SWITCH_MODE("SWITCH_MODE", R.string.gesture_action_switch_mode, R.string.gesture_action_switch_mode_summary, host = true),
 
     /** The library's Games grid, as the home screen's menu opens it. */
-    OPEN_GAMES("OPEN_GAMES", R.string.gesture_action_open_games, R.string.gesture_action_open_games_summary),
+    OPEN_GAMES("OPEN_GAMES", R.string.gesture_action_open_games, R.string.gesture_action_open_games_summary, host = true),
 
     /** An app the person picked (Nova's and Apex's "open an app" gesture; Droidtop/tracker#564). */
     LAUNCH_APP("LAUNCH_APP", R.string.gesture_action_launch_app, R.string.gesture_action_launch_app_summary),
     ;
 
     fun getDisplayName(context: Context): String = context.getString(displayNameRes)
+
+    /** Whether this action can be chosen here: Murine's own always; a host's only where the host has it. */
+    fun isOffered(): Boolean = !host || MurineHooks.actions.offers(id)
     fun getSummary(context: Context): String = context.getString(summaryRes)
 
     /**
@@ -95,31 +102,11 @@ enum class GestureAction(val id: String, val displayNameRes: Int, val summaryRes
             performGlobal(launcher, AccessibilityService.GLOBAL_ACTION_RECENTS)
             true
         }
-        CLEAR_ALL_APPS -> {
-            dev.droidtop.shell.standard.ClearAllApps.open(launcher)
-            true
-        }
-        OPEN_COMPANION -> {
-            dev.droidtop.runtime.CompanionSheet.open(launcher, false)
-            true
-        }
-        OPEN_SEARCH -> {
-            dev.droidtop.shell.standard.LauncherSearch.open(launcher)
-            true
-        }
-        OPEN_QUICK_MENU -> {
-            dev.droidtop.shell.standard.DroidtopScreens.openQuickMenu(launcher)
-            true
-        }
-        SWITCH_MODE -> {
-            dev.droidtop.shell.standard.ModeSwitcher.open(launcher)
-            true
-        }
-        OPEN_GAMES -> {
-            dev.droidtop.shell.standard.DroidtopScreens.openGames(launcher)
-            true
-        }
-        LAUNCH_APP -> app != null && dev.droidtop.shell.standard.HomeActions.launchApp(launcher, app)
+        // A host's own action: the host runs it (droidtop: Clear all apps, its companion, its search, the Quick
+        // Menu, the mode switcher, the library's Games). With no host it does nothing.
+        CLEAR_ALL_APPS, OPEN_COMPANION, OPEN_SEARCH, OPEN_QUICK_MENU, SWITCH_MODE, OPEN_GAMES ->
+            MurineHooks.actions.run(id, launcher)
+        LAUNCH_APP -> app != null && HomeActions.launchApp(launcher, app)
     }
 
     companion object {
@@ -142,8 +129,8 @@ enum class GestureAction(val id: String, val displayNameRes: Int, val summaryRes
          * accessibility settings.
          */
         private fun performGlobal(launcher: Launcher, action: Int) {
-            if (dev.droidtop.runtime.keyboard.AccessibilityHost.performGlobalAction(action)) {
-                // Done by droidtop's one accessibility service.
+            if (MurineHooks.actions.performGlobalAction(action)) {
+                // Done by the host's accessibility service (droidtop's one service).
             } else if (!LauncherPrefs.ACCESSIBILITY_DISCLOSURE_ACCEPTED.get(launcher)) {
                 AlertDialogSheet.show(
                     launcher,
@@ -182,7 +169,7 @@ enum class GestureAction(val id: String, val displayNameRes: Int, val summaryRes
 
 /**
  * Standard's gesture slots, listed once (Droidtop/tracker#771): each slot's name, which is also its name in the Nova
- * and Apex import (`ImportActions`) and in [dev.droidtop.runtime.StandardGestures.Slot]; the key of its row in Home
+ * and Apex import (`ImportActions`) and in [StandardGestures.Slot]; the key of its row in Home
  * settings; and the preference that holds its action. The importer, the multi-finger controller and the settings read
  * this table, so a new slot is one row here.
  */
@@ -212,7 +199,7 @@ enum class GestureSlot(val settingKey: String) {
 
         fun bySettingKey(key: String?): GestureSlot? = entries.firstOrNull { it.settingKey == key }
 
-        /** The two-finger slot [StandardGestures][dev.droidtop.runtime.StandardGestures] recognised. */
-        fun of(slot: dev.droidtop.runtime.StandardGestures.Slot): GestureSlot = valueOf(slot.name)
+        /** The two-finger slot [StandardGestures][StandardGestures] recognised. */
+        fun of(slot: StandardGestures.Slot): GestureSlot = valueOf(slot.name)
     }
 }

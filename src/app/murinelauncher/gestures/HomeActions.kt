@@ -1,4 +1,4 @@
-package dev.droidtop.shell.standard
+package app.murinelauncher.gestures
 
 import android.content.ComponentName
 import android.content.Context
@@ -14,9 +14,8 @@ import com.android.launcher3.ConstantItem
 import com.android.launcher3.R
 import com.android.launcher3.touch.GestureAction
 import com.android.launcher3.util.Executors
-import dev.droidtop.library.settings.NoticeTone
-import dev.droidtop.library.settings.Notices
-import dev.droidtop.runtime.HomeAction
+import app.murinelauncher.hooks.MurineHooks
+import app.murinelauncher.hooks.NoticeHooks
 
 /**
  * Runs what a gesture slot or a home icon's swipe is set to (docs/SPEC.md, Launcher mode "Gestures" and "Icon
@@ -25,7 +24,7 @@ import dev.droidtop.runtime.HomeAction
  * [APP_SUFFIX]. Everything else stores a [HomeAction] in its encoded form.
  */
 object HomeActions {
-    private const val TAG = "droidtop.HomeActions"
+    private const val TAG = "HomeActions"
     const val APP_SUFFIX = "_app"
 
     /** The preference beside a slot's that names the app it starts. Backed up like the slot's own. */
@@ -39,7 +38,7 @@ object HomeActions {
     fun slotAction(context: Context, slot: ConstantItem<GestureAction>): HomeAction? = when (val action = slot.get(context)) {
         GestureAction.NONE -> null
         GestureAction.LAUNCH_APP -> slotApp(context, slot)?.let { HomeAction.Launch(it) }
-        else -> HomeAction.Droidtop(action.id)
+        else -> HomeAction.Action(action.id)
     }
 
     /** Sets a slot to [action]; null sets it to nothing. */
@@ -47,7 +46,7 @@ object HomeActions {
         val (value, app) = when (action) {
             null -> GestureAction.NONE to null
             is HomeAction.Launch -> GestureAction.LAUNCH_APP to action.component
-            is HomeAction.Droidtop -> (droidtopAction(action.action) ?: GestureAction.NONE) to null
+            is HomeAction.Action -> (droidtopAction(action.id) ?: GestureAction.NONE) to null
         }
         LauncherPrefs.get(context).put(appItem(slot), app.orEmpty())
         LauncherPrefs.get(context).put(slot, value)
@@ -62,11 +61,11 @@ object HomeActions {
     /** Runs [action]. Returns whether the gesture should be consumed. */
     fun run(launcher: Launcher, action: HomeAction?): Boolean = when (action) {
         null -> false
-        is HomeAction.Droidtop -> droidtopAction(action.action)?.perform(launcher) ?: false
+        is HomeAction.Action -> droidtopAction(action.id)?.perform(launcher) ?: false
         is HomeAction.Launch -> GestureAction.LAUNCH_APP.perform(launcher, action.component)
     }
 
-    /** The droidtop action a saved id names. Opening an app is a [HomeAction.Launch], never a bare id. */
+    /** The launcher action a saved id names. Opening an app is a [HomeAction.Launch], never a bare id. */
     private fun droidtopAction(id: String): GestureAction? = GestureAction.byId(id)?.takeIf { it != GestureAction.LAUNCH_APP }
 
     /**
@@ -80,7 +79,7 @@ object HomeActions {
             launcher.getSystemService(LauncherApps::class.java).startMainActivity(name, Process.myUserHandle(), null, null)
         } catch (e: Exception) {
             Log.w(TAG, "could not start $component", e)
-            Notices.flash(launcher.getString(R.string.home_action_app_missing), tone = NoticeTone.Caution, context = launcher)
+            MurineHooks.notices.flash(launcher.getString(R.string.home_action_app_missing), NoticeHooks.Tone.Caution)
         }
         return true
     }
@@ -88,7 +87,7 @@ object HomeActions {
     /** What [action] is called, for a setting's summary and a menu. */
     fun label(context: Context, action: HomeAction?): String = when (action) {
         null -> GestureAction.NONE.getDisplayName(context)
-        is HomeAction.Droidtop -> droidtopAction(action.action)?.getDisplayName(context) ?: GestureAction.NONE.getDisplayName(context)
+        is HomeAction.Action -> droidtopAction(action.id)?.getDisplayName(context) ?: GestureAction.NONE.getDisplayName(context)
         is HomeAction.Launch -> context.getString(R.string.home_action_open_app, appLabel(context, action.component))
     }
 
@@ -139,7 +138,7 @@ object HomeActions {
         val currentIndex = when (current) {
             null -> GestureAction.NONE.ordinal
             is HomeAction.Launch -> GestureAction.LAUNCH_APP.ordinal
-            is HomeAction.Droidtop -> droidtopAction(current.action)?.ordinal ?: GestureAction.NONE.ordinal
+            is HomeAction.Action -> droidtopAction(current.id)?.ordinal ?: GestureAction.NONE.ordinal
         }
         RadioListDialog.show(
             context = context,
@@ -150,13 +149,14 @@ object HomeActions {
             textProvider = { i -> if (actions[i] == GestureAction.LAUNCH_APP && current is HomeAction.Launch) label(context, current) else actions[i].getDisplayName(context) },
             iconProvider = null,
             iconTint = null,
-            isVisibleProvider = null,
+            // A host's actions only where the host has them (GestureAction.isOffered).
+            isVisibleProvider = { i -> actions[i].isOffered() },
             isEnabledProvider = null,
             onSelected = { i ->
                 when (val action = actions[i]) {
                     GestureAction.NONE -> onPick(null)
                     GestureAction.LAUNCH_APP -> pickApp(context, title) { onPick(HomeAction.Launch(it)) }
-                    else -> onPick(HomeAction.Droidtop(action.id))
+                    else -> onPick(HomeAction.Action(action.id))
                 }
             },
         )

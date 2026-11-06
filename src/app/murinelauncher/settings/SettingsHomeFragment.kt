@@ -13,6 +13,8 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
+import app.murinelauncher.hooks.MurineHooks
+import app.murinelauncher.hooks.NoticeHooks
 import app.murinelauncher.receiver.ScreenOffAdminReceiver
 import app.murinelauncher.widget.CustomSeekBarPreference
 import app.murinelauncher.widget.radio.RadioGroupPreference
@@ -20,8 +22,8 @@ import app.murinelauncher.widget.smartspace.SmartspaceMode
 import app.murinelauncher.settings.common.AbstractSettingsFragment
 import com.android.launcher3.touch.GestureAction
 import com.android.launcher3.ConstantItem
-import dev.droidtop.runtime.HomeAction
-import dev.droidtop.shell.standard.HomeActions
+import app.murinelauncher.gestures.HomeAction
+import app.murinelauncher.gestures.HomeActions
 import com.android.launcher3.Flags
 import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.LauncherPrefs
@@ -69,7 +71,7 @@ public final class SettingsHomeFragment: AbstractSettingsFragment() {
                 Thread {
                     dev.droidtop.runtime.keyboard.AccessibilityKeyboard.turnOn(context)
                 }.start()
-                app.murinelauncher.hooks.MurineHooks.notices.flash(context.resources.getString(R.string.pref_accessibility_request_toast), app.murinelauncher.hooks.NoticeHooks.Tone.Info)
+                MurineHooks.notices.flash(context.resources.getString(R.string.pref_accessibility_request_toast), NoticeHooks.Tone.Info)
                 return false
             }
             return true
@@ -232,6 +234,8 @@ public final class SettingsHomeFragment: AbstractSettingsFragment() {
         preference.asEnum(GestureAction::class.java).apply {
             setDefaultValue(slot.defaultValue)
             setTextProvider { c, action -> action.getDisplayName(c) }
+            // A host's actions only where the host has them (GestureAction.isOffered).
+            setVisibleProvider { _, action -> action.isOffered() }
             // A slot that opens an app names the app.
             setSummaryProvider { c, action ->
                 if (action == GestureAction.LAUNCH_APP) HomeActions.label(c, HomeActions.slotAction(c, slot)) else action.getSummary(c)

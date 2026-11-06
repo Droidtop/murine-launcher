@@ -362,7 +362,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         mIconSwipe = new dev.droidtop.shell.standard.IconSwipe(this,
                 up -> swipeAction(up) != null,
                 up -> {
-                    dev.droidtop.shell.standard.HomeActions.INSTANCE.run(
+                    app.murinelauncher.gestures.HomeActions.INSTANCE.run(
                             Launcher.getLauncher(getContext()), swipeAction(up));
                     return kotlin.Unit.INSTANCE;
                 });
@@ -714,7 +714,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
      * droidtop: what a swipe up or down on this icon does, set by the person for this one app icon on the home
      * screen, in the dock or in a folder; null when nothing, or anywhere else.
      */
-    private dev.droidtop.runtime.HomeAction swipeAction(boolean up) {
+    private app.murinelauncher.gestures.HomeAction swipeAction(boolean up) {
         if ((mDisplay != DISPLAY_WORKSPACE && mDisplay != DISPLAY_FOLDER)
                 || !(getTag() instanceof ItemInfo info) || info.id < 0
                 || info.itemType != LauncherSettings.Favorites.ITEM_TYPE_APPLICATION

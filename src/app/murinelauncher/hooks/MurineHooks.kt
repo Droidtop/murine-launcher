@@ -28,6 +28,11 @@ object MurineHooks {
     @JvmStatic
     var notices: NoticeHooks = NoticeHooks { message, _ -> appContext?.let { toast(it, message) } }
 
+    /** The host's own home actions and accessibility service. Murine's own: none. */
+    @Volatile
+    @JvmStatic
+    var actions: ActionHooks = ActionHooks.NONE
+
     private fun toast(context: Context, message: String) {
         Handler(Looper.getMainLooper()).post { Toast.makeText(context, message, Toast.LENGTH_SHORT).show() }
     }

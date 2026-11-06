@@ -9,7 +9,7 @@ import com.android.launcher3.LauncherPrefs
 import com.android.launcher3.LauncherState
 import com.android.launcher3.MotionEventsUtils
 import com.android.launcher3.util.TouchController
-import dev.droidtop.shell.standard.HomeActions
+import app.murinelauncher.gestures.HomeActions
 import kotlin.math.abs
 
 /**

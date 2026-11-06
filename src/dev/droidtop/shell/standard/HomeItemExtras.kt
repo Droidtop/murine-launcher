@@ -13,7 +13,7 @@ import com.android.launcher3.icons.FastBitmapDrawable
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.model.data.ItemInfoWithIcon
 import dev.droidtop.runtime.CachedPref
-import dev.droidtop.runtime.HomeAction
+import app.murinelauncher.gestures.HomeAction
 import java.io.File
 import java.io.FileOutputStream
 import org.json.JSONObject
