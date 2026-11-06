@@ -7,6 +7,9 @@ import android.util.Log
 import app.murinelauncher.widget.search.WebSearch
 import com.android.launcher3.R
 
+// Outside the companion: an interface companion with a @JvmField may hold only public @JvmField vals.
+private const val TAG = "SearchHooks"
+
 /**
  * The launcher's one search: the drawer's search field (a tap, or a key typed in the drawer), the home search bar,
  * a spoken query, and the Search gesture all open it. droidtop's is its library search, with the web as one row.
@@ -17,8 +20,6 @@ fun interface SearchHooks {
     fun open(context: Context, query: String?)
 
     companion object {
-        private const val TAG = "SearchHooks"
-
         /** Murine on its own: a web search for a query, the system's search for none. */
         @JvmField
         val DEFAULT = SearchHooks { context, query ->
